@@ -1,0 +1,24 @@
+.arch { display: grid; gap: var(--space-3); }
+.arch > h2 { margin-bottom: var(--space-2); }
+.arch-block { border: 1px solid var(--line); border-radius: var(--radius-sm); padding: var(--space-4); display: grid; gap: var(--space-1); background: var(--surface); height: 100%; }
+.arch-block__head { display: flex; justify-content: space-between; align-items: center; gap: var(--space-3); flex-wrap: wrap; }
+.arch-block p { font-size: var(--text-sm); }
+.arch-block__tech { color: var(--muted); }
+.arch-portal .arch-block { border: 2px solid var(--gold-500); background: var(--gold-100); }
+.arch-link { position: relative; display: flex; justify-content: center; padding: var(--space-3) 0; font-size: var(--text-sm); color: var(--muted); text-align: center; }
+.arch-link::before { content: ''; position: absolute; left: 50%; top: 0; bottom: 0; border-left: 2px dashed var(--line-strong); }
+.arch-link span { position: relative; display: inline-flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: var(--space-2); background: var(--surface); padding: 0 var(--space-3); }
+.arch-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-3); }
+
+.arch-stages { margin-top: var(--space-6); }
+.arch-stages > ol { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--space-4); margin-top: var(--space-4); }
+.arch-stages > ol > li { display: grid; gap: var(--space-2); align-content: start; }
+.arch-stages > ol > li.is-current { border-color: var(--gold-500); box-shadow: inset 0 3px 0 var(--gold-500), var(--shadow); }
+.arch-stage__n { display: flex; align-items: center; gap: var(--space-2); font-size: var(--text-sm); font-weight: 600; color: var(--gold-ink); }
+.arch-stages ul { display: grid; gap: 4px; font-size: var(--text-sm); list-style: disc; padding-left: var(--space-5); }
+.arch-stage__base { font-size: var(--text-sm); color: var(--muted); border-top: 1px solid var(--line); padding-top: var(--space-2); margin-top: var(--space-2); }
+
+@media (max-width: 1100px) { .arch-stages > ol { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 600px) {
+  .arch-row, .arch-stages > ol { grid-template-columns: minmax(0, 1fr); }
+}

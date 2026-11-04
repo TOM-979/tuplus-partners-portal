@@ -1,0 +1,4 @@
+.progress { display: flex; align-items: center; gap: var(--space-3); }
+.progress__track { flex: 1; height: 8px; border-radius: 999px; background: #e7ebf0; overflow: hidden; }
+.progress__fill { display: block; height: 100%; border-radius: inherit; background: var(--gold-500); transition: width 0.3s ease; }
+.progress__value { font-size: var(--text-sm); font-weight: 600; min-width: 3ch; text-align: right; font-variant-numeric: tabular-nums; }

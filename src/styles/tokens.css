@@ -1,0 +1,52 @@
+/* Marca TUPLUS: azul marino y dorado del colibrí (logo oficial) */
+:root {
+  --navy-950: #0a152c;
+  --navy-900: #0f2038;
+  --navy-800: #122c3d;
+  --navy-700: #1d3a52;
+  --gold-500: #cb9d54;
+  --gold-300: #e6cf9c;
+  --gold-100: #f6ecd6;
+  --gold-ink: #7a5a1c;
+
+  --bg: #f1f4f8;
+  --surface: #ffffff;
+  --line: #dce2ea;
+  --line-strong: #b9c3d1;
+  --ink: #0d1b2e;
+  --muted: #536074;
+
+  --ok: #1b6b4f;
+  --ok-soft: #e3f3ec;
+  --warn: #8a5a00;
+  --warn-soft: #fbf0d9;
+  --bad: #a3262a;
+  --bad-soft: #fbe6e6;
+  --info: #1f5c99;
+  --info-soft: #e4eef9;
+
+  --font-display: 'Saira', 'Segoe UI', sans-serif;
+  --font-text: 'Public Sans', 'Segoe UI', system-ui, sans-serif;
+
+  /* Escala de letra: 12 / 14 / 16 / 20 / 28 */
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-md: 1rem;
+  --text-lg: 1.25rem;
+  --text-xl: 1.75rem;
+
+  /* Espacios en múltiplos de 4 */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+
+  --radius: 10px;
+  --radius-sm: 8px;
+  --shadow: 0 1px 2px rgba(10, 21, 44, 0.06), 0 4px 14px rgba(10, 21, 44, 0.05);
+  --sidebar: 264px;
+  --touch: 44px;
+}

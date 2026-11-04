@@ -1,0 +1,6 @@
+.public { min-height: 100dvh; display: grid; grid-template-rows: auto 1fr auto; background: var(--bg); }
+.public__bar { display: flex; align-items: center; justify-content: space-between; gap: var(--space-4); padding: var(--space-4) var(--space-5); background: var(--navy-950); }
+.public__bar a { display: inline-flex; min-height: var(--touch); align-items: center; }
+.public__tag { color: var(--gold-300); font-family: var(--font-display); font-weight: 500; font-size: var(--text-sm); }
+.public__main { width: min(100% - 32px, 1040px); margin: var(--space-6) auto; }
+.public__foot { padding: var(--space-5); text-align: center; color: var(--muted); font-size: var(--text-xs); }

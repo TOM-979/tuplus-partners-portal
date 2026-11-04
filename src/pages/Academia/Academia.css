@@ -1,0 +1,11 @@
+.academy-level { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3); margin-bottom: var(--space-3); font-size: var(--text-md); }
+.academy-lock { display: inline-flex; align-items: center; gap: 6px; font-family: var(--font-text); font-weight: 500; font-size: var(--text-sm); color: var(--muted); }
+.academy-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: var(--space-4); }
+.academy-card { display: grid; gap: var(--space-3); align-content: start; }
+.academy-card p { font-size: var(--text-sm); margin-top: -8px; }
+.academy-card .btn { justify-self: start; }
+.academy-card.is-locked { background: #f7f9fb; box-shadow: none; }
+.academy-card.is-locked h3 { color: var(--muted); }
+.academy-meta { display: flex; flex-wrap: wrap; gap: var(--space-3); align-items: center; }
+.academy-cert { display: inline-flex; gap: 6px; align-items: center; font-size: var(--text-sm); font-weight: 600; color: var(--gold-ink); }
+.academy-note { font-size: var(--text-sm); }

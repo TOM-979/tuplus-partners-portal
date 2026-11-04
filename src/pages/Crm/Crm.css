@@ -1,0 +1,24 @@
+.crm-form { display: grid; gap: var(--space-4); margin-bottom: var(--space-5); }
+.crm-form__fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-4); }
+.crm-form__actions { display: flex; justify-content: flex-end; }
+.crm-filter { display: flex; align-items: center; gap: var(--space-3); margin-bottom: var(--space-4); font-size: var(--text-sm); font-weight: 600; }
+.crm-filter select { min-height: var(--touch); padding: 0 var(--space-3); border: 1px solid var(--line-strong); border-radius: var(--radius-sm); background: var(--surface); }
+
+.crm-board { position: relative; display: grid; grid-auto-flow: column; grid-auto-columns: minmax(230px, 1fr); gap: var(--space-3); overflow-x: auto; padding-bottom: var(--space-3); }
+.crm-col { background: #e9edf2; border-radius: var(--radius); padding: var(--space-3); min-height: 240px; }
+.crm-col h2 { display: flex; justify-content: space-between; align-items: center; font-size: var(--text-sm); padding: var(--space-1) var(--space-1) var(--space-3); }
+.crm-col h2 span { font-family: var(--font-text); font-size: var(--text-xs); color: var(--muted); background: var(--surface); border-radius: 999px; padding: 0 8px; }
+.crm-col ul { display: grid; gap: var(--space-2); }
+.crm-empty { font-size: var(--text-xs); color: var(--muted); padding: var(--space-2); }
+
+.crm-card { display: grid; gap: 6px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-sm); padding: var(--space-3); }
+.crm-card p { font-size: var(--text-sm); }
+.crm-card__company { font-weight: 600; font-size: var(--text-md) !important; }
+.crm-card__meta { display: flex; justify-content: space-between; align-items: center; gap: var(--space-2); font-size: var(--text-sm); font-weight: 600; font-variant-numeric: tabular-nums; }
+.crm-card__next { color: var(--muted); border-top: 1px solid var(--line); padding-top: 6px; }
+.crm-card select { min-height: 36px; width: 100%; border: 1px solid var(--line-strong); border-radius: 6px; background: var(--surface); font-size: var(--text-sm); padding: 0 var(--space-2); }
+
+@media (max-width: 640px) {
+  .crm-form__fields { grid-template-columns: minmax(0, 1fr); }
+  .crm-board { grid-auto-columns: minmax(250px, 82%); }
+}

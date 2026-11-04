@@ -1,0 +1,11 @@
+.field { display: grid; gap: 6px; }
+.field label { font-weight: 600; font-size: var(--text-sm); }
+.field__hint { color: var(--muted); font-size: var(--text-xs); }
+.field input, .field select, .field textarea {
+  min-height: var(--touch); width: 100%; padding: 10px 12px;
+  border: 1px solid var(--line-strong); border-radius: var(--radius-sm); background: var(--surface);
+}
+.field textarea { min-height: 96px; resize: vertical; }
+.field input:focus-visible, .field select:focus-visible, .field textarea:focus-visible { outline-offset: 0; border-color: var(--navy-900); }
+.field--error input, .field--error select, .field--error textarea { border-color: var(--bad); }
+.field__error { color: var(--bad); font-size: var(--text-sm); font-weight: 500; }
