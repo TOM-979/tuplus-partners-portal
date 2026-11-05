@@ -1,15 +1,19 @@
+import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import './Acceso.css'
 import Icon from '../../components/Icon/Icon.jsx'
 import { useRole } from '../../context/RoleContext.jsx'
 
 export default function Acceso() {
-  const { setRole } = useRole()
+  const { login } = useRole()
   const navigate = useNavigate()
+  const [error, setError] = useState('')
 
-  const enter = (role) => {
-    setRole(role)
-    navigate(role === 'partner' ? '/' : '/direccion')
+  const enter = async (email, password) => {
+    try {
+      const user = await login(email, password)
+      navigate(user.role === 'partner' ? '/' : user.role === 'lider_regional' ? '/crm' : '/direccion')
+    } catch (err) { setError(err.message) }
   }
 
   return (
@@ -32,11 +36,16 @@ export default function Acceso() {
           Por ahora elige una vista de demostración.
         </p>
         <div className="access__roles">
-          <button type="button" className="access__role" onClick={() => enter('partner')}>
+          {error && <p role="alert" className="field__error">{error}</p>}
+          <button type="button" className="access__role" onClick={() => enter('partner@tuplus.test', 'PartnerDemo2026!')}>
             <Icon name="user" size={24} />
             <span><strong>Entrar como Partner</strong><small>Panel comercial, CRM propio, Academia y nivel</small></span>
           </button>
-          <button type="button" className="access__role" onClick={() => enter('direccion')}>
+          <button type="button" className="access__role" onClick={() => enter('lider@tuplus.test', 'LiderDemo2026!')}>
+            <Icon name="map" size={24} />
+            <span><strong>Entrar como Líder Regional</strong><small>Partners de su territorio</small></span>
+          </button>
+          <button type="button" className="access__role" onClick={() => enter('direccion@tuplus.test', 'DireccionDemo2026!')}>
             <Icon name="chart" size={24} />
             <span><strong>Entrar como Dirección</strong><small>Red de Partners, territorios, revisión y etapas</small></span>
           </button>

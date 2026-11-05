@@ -2,6 +2,7 @@ import './Perfil.css'
 import PageHeader from '../../components/PageHeader/PageHeader.jsx'
 import Badge from '../../components/Badge/Badge.jsx'
 import Icon from '../../components/Icon/Icon.jsx'
+import { useEffect, useState } from 'react'
 import { useRole } from '../../context/RoleContext.jsx'
 import { levels } from '../../data/levels.js'
 import { modules } from '../../data/academy.js'
@@ -9,6 +10,17 @@ import { modules } from '../../data/academy.js'
 // Perfil, código y permisos del Partner
 export default function Perfil() {
   const { partner } = useRole()
+  const [authorized, setAuthorized] = useState(false)
+  const [denied, setDenied] = useState('')
+  useEffect(() => {
+    fetch('/api/profile', { credentials: 'include' }).then(async (response) => {
+      const data = await response.json()
+      if (!response.ok) throw new Error(data.error)
+      setAuthorized(true)
+    }).catch((error) => setDenied(error.message))
+  }, [])
+  if (denied) return <p role="alert">{denied}</p>
+  if (!authorized) return <p>Cargando perfil…</p>
   const level = levels.find((l) => l.code === partner.level)
   const certs = modules.filter((m) => m.certificate)
 

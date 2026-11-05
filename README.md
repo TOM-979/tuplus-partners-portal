@@ -2,7 +2,7 @@
 
 Base del Portal TUPLUS Partners: el sistema privado de la Red de Socios Comerciales. Es un proyecto **separado de la web corporativa** (Astro) y se conecta con ella mediante un enlace de acceso y una API segura.
 
-> Es una base de demostración: no tiene inicio de sesión real ni guarda datos en un servidor. Todos los datos son de muestra.
+> La autenticación y las consultas de permisos se ejecutan en funciones de servidor. Los datos son de muestra; las cuentas de demostración no son aptas para producción.
 
 ## Cómo usarla
 
@@ -13,7 +13,15 @@ npm run dev        # abre http://localhost:5173
 
 Otros comandos: `npm run build` (versión final en `dist/`) y `npm run preview` (prueba la versión final).
 
-En la pantalla de acceso elige **Entrar como Partner** o **Entrar como Dirección**. Desde el menú lateral puedes cambiar de vista.
+La pantalla de acceso ofrece cuentas de demostración para Partner, Líder Regional y Dirección. El servidor asigna el rol y mantiene la sesión en una cookie `HttpOnly`.
+
+| Cuenta | Contraseña | Acceso |
+|---|---|---|
+| `partner@tuplus.test` | `PartnerDemo2026!` | Perfil y oportunidades propias |
+| `lider@tuplus.test` | `LiderDemo2026!` | Partners y oportunidades de Barranca |
+| `direccion@tuplus.test` | `DireccionDemo2026!` | Toda la red |
+
+Ejecuta `npm test` para probar los rechazos de acceso cruzado.
 
 ## Pantallas
 

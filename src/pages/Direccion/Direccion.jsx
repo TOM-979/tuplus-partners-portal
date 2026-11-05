@@ -1,13 +1,12 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import './Direccion.css'
 import PageHeader from '../../components/PageHeader/PageHeader.jsx'
 import StatCard from '../../components/StatCard/StatCard.jsx'
 import Badge from '../../components/Badge/Badge.jsx'
 import ProgressBar from '../../components/ProgressBar/ProgressBar.jsx'
 import Icon from '../../components/Icon/Icon.jsx'
-import { territories as seedTerritories, territoryStates } from '../../data/territories.js'
-import { applications as seedApps, applicationStates } from '../../data/applications.js'
-import { opportunities } from '../../data/crm.js'
+import { territoryStates } from '../../data/territories.js'
+import { applicationStates } from '../../data/applications.js'
 
 const decisions = [
   { state: 'preseleccionado', label: 'Preseleccionar' },
@@ -17,9 +16,22 @@ const decisions = [
 
 // Panel de Dirección y Gestión: red, territorios, revisión humana y comisiones (bloqueadas)
 export default function Direccion() {
-  const [territories, setTerritories] = useState(seedTerritories)
-  const [apps, setApps] = useState(seedApps)
+  const [territories, setTerritories] = useState([])
+  const [apps, setApps] = useState([])
+  const [opportunities, setOpportunities] = useState([])
+  const [accessError, setAccessError] = useState('')
   const [history, setHistory] = useState([])
+
+  useEffect(() => {
+    fetch('/api/direccion', { credentials: 'include' }).then(async (response) => {
+      const data = await response.json()
+      if (!response.ok) throw new Error(data.error)
+      setTerritories(data.territories); setApps(data.applications); setOpportunities(data.opportunities)
+    }).catch((error) => setAccessError(error.message))
+  }, [])
+
+  if (accessError) return <p role="alert">{accessError}</p>
+  if (territories.length === 0) return <p>Cargando panel…</p>
 
   const now = () => new Date().toLocaleString('es-PE', { timeZone: 'America/Lima', dateStyle: 'short', timeStyle: 'short' })
 

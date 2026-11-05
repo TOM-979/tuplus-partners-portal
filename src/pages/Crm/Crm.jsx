@@ -1,10 +1,10 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import './Crm.css'
 import PageHeader from '../../components/PageHeader/PageHeader.jsx'
 import Field from '../../components/Field/Field.jsx'
 import Badge from '../../components/Badge/Badge.jsx'
 import { useRole } from '../../context/RoleContext.jsx'
-import { opportunities as seed, stages } from '../../data/crm.js'
+import { stages } from '../../data/crm.js'
 
 const money = (n) => (n ? `USD ${n.toLocaleString('es-PE')}` : 'Por cotizar')
 const emptyForm = { company: '', sector: '', city: '', need: '' }
@@ -12,7 +12,8 @@ const emptyForm = { company: '', sector: '', city: '', need: '' }
 // CRM Comercial B2B: cada Partner ve solo lo suyo; la Dirección ve todo
 export default function Crm() {
   const { role, partner } = useRole()
-  const [items, setItems] = useState(seed)
+  const [items, setItems] = useState([])
+  const [loadError, setLoadError] = useState('')
   const [showForm, setShowForm] = useState(false)
   const [form, setForm] = useState(emptyForm)
   const [error, setError] = useState('')
@@ -20,8 +21,14 @@ export default function Crm() {
   const [owner, setOwner] = useState('todos')
 
   const isPartner = role === 'partner'
+  useEffect(() => {
+    fetch('/api/opportunities', { credentials: 'include' })
+      .then(async (response) => { const data = await response.json(); if (!response.ok) throw new Error(data.error); return data })
+      .then((data) => setItems(data.opportunities))
+      .catch((err) => setLoadError(err.message))
+  }, [])
   const owners = [...new Set(items.map((o) => o.partner))]
-  const visible = items.filter((o) => (isPartner ? o.partner === partner.id : owner === 'todos' || o.partner === owner))
+  const visible = items.filter((o) => (role !== 'direccion' ? true : owner === 'todos' || o.partner === owner))
 
   const move = (id, stage) => {
     setItems((list) => list.map((o) => (o.id === id ? { ...o, stage } : o)))
@@ -71,7 +78,7 @@ export default function Crm() {
         </div>
       )}
 
-      <p className="visually-hidden" aria-live="polite">{notice}</p>
+      {(loadError || notice) && <p role={loadError ? 'alert' : 'status'}>{loadError || notice}</p>}
 
       <div className="crm-board" role="region" aria-label="Oportunidades por etapa" tabIndex={0}>
         {stages.map((s) => {

@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { useEffect, useState } from 'react'
 import './Panel.css'
 import PageHeader from '../../components/PageHeader/PageHeader.jsx'
 import StatCard from '../../components/StatCard/StatCard.jsx'
@@ -8,7 +9,7 @@ import Badge from '../../components/Badge/Badge.jsx'
 import Icon from '../../components/Icon/Icon.jsx'
 import { useRole } from '../../context/RoleContext.jsx'
 import { levels } from '../../data/levels.js'
-import { opportunities, stages } from '../../data/crm.js'
+import { stages } from '../../data/crm.js'
 import { modules } from '../../data/academy.js'
 
 const money = (n) => (n ? `USD ${n.toLocaleString('es-PE')}` : 'Por cotizar')
@@ -16,6 +17,15 @@ const money = (n) => (n ? `USD ${n.toLocaleString('es-PE')}` : 'Por cotizar')
 // Panel comercial personalizado del Partner
 export default function Panel() {
   const { partner } = useRole()
+  const [opportunities, setOpportunities] = useState([])
+  const [accessError, setAccessError] = useState('')
+  useEffect(() => {
+    fetch('/api/opportunities', { credentials: 'include' }).then(async (response) => {
+      const data = await response.json()
+      if (!response.ok) throw new Error(data.error)
+      setOpportunities(data.opportunities)
+    }).catch((error) => setAccessError(error.message))
+  }, [])
   const level = levels.find((l) => l.code === partner.level)
   const mine = opportunities.filter((o) => o.partner === partner.id)
   const active = mine.filter((o) => !['cierre', 'posventa'].includes(o.stage))
@@ -26,6 +36,7 @@ export default function Panel() {
 
   return (
     <>
+      {accessError && <p role="alert">{accessError}</p>}
       <PageHeader title={`Hola, ${partner.name}`} description="Tu avance, tus oportunidades y lo que toca hacer esta semana."
         actions={<Link className="btn btn-primary" to="/crm">Registrar oportunidad</Link>} />
 

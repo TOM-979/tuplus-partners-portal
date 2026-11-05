@@ -1,25 +1,36 @@
-import { createContext, useContext, useState } from 'react'
+import { createContext, useContext, useEffect, useState } from 'react'
 
 // Rol de demostración. En la Etapa 1 esto vendrá del inicio de sesión real (backend con roles).
 const RoleContext = createContext(null)
-const KEY = 'tuplus-portal-rol'
-
-function readRole() {
-  try { return localStorage.getItem(KEY) } catch { return null }
-}
-
 export function RoleProvider({ children }) {
-  const [role, setRoleState] = useState(readRole)
+  const [user, setUser] = useState(null)
+  const [ready, setReady] = useState(false)
 
-  const setRole = (value) => {
-    setRoleState(value)
-    try { value ? localStorage.setItem(KEY, value) : localStorage.removeItem(KEY) } catch { /* sin almacenamiento */ }
+  useEffect(() => {
+    fetch('/api/session', { credentials: 'include' })
+      .then((response) => response.ok ? response.json() : null)
+      .then((data) => setUser(data?.user || null))
+      .catch(() => setUser(null))
+      .finally(() => setReady(true))
+  }, [])
+
+  const login = async (email, password) => {
+    const response = await fetch('/api/session', {
+      method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password }),
+    })
+    const data = await response.json()
+    if (!response.ok) throw new Error(data.error)
+    setUser(data.user)
+    return data.user
   }
 
-  // Datos de muestra del Partner que entra en la demostración
-  const partner = { id: 'P-014', name: 'Partner de muestra', level: 'L2', territory: 'Barranca' }
+  const logout = async () => {
+    await fetch('/api/session', { method: 'DELETE', credentials: 'include' })
+    setUser(null)
+  }
 
-  return <RoleContext.Provider value={{ role, setRole, partner }}>{children}</RoleContext.Provider>
+  return <RoleContext.Provider value={{ role: user?.role || null, user, partner: user, login, logout, ready }}>{children}</RoleContext.Provider>
 }
 
 export function useRole() {

@@ -15,7 +15,7 @@ import { useRole } from './context/RoleContext.jsx'
 // Rutas protegidas por rol (en la Etapa 1 el servidor también valida el permiso)
 function OnlyFor({ role: needed, children }) {
   const { role } = useRole()
-  if (role !== needed) return <Navigate to={role === 'direccion' ? '/direccion' : '/'} replace />
+  if (role !== needed) return <p role="alert">No tienes permiso para ver esta sección</p>
   return children
 }
 
@@ -29,7 +29,7 @@ export default function App() {
       <Route element={<AppLayout />}>
         <Route index element={<OnlyFor role="partner"><Panel /></OnlyFor>} />
         <Route path="perfil" element={<OnlyFor role="partner"><Perfil /></OnlyFor>} />
-        <Route path="direccion" element={<OnlyFor role="direccion"><Direccion /></OnlyFor>} />
+        <Route path="direccion" element={<Direccion />} />
         <Route path="arquitectura" element={<OnlyFor role="direccion"><Arquitectura /></OnlyFor>} />
         <Route path="crm" element={<Crm />} />
         <Route path="academia" element={<Academia />} />

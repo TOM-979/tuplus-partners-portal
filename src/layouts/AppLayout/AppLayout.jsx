@@ -9,15 +9,15 @@ import { useRole } from '../../context/RoleContext.jsx'
 const nav = [
   { to: '/', label: 'Panel comercial', icon: 'home', roles: ['partner'] },
   { to: '/direccion', label: 'Panel de Dirección', icon: 'chart', roles: ['direccion'] },
-  { to: '/crm', label: 'CRM de oportunidades', icon: 'briefcase', roles: ['partner', 'direccion'] },
-  { to: '/academia', label: 'Academia Comercial', icon: 'book', roles: ['partner', 'direccion'] },
-  { to: '/niveles', label: 'Niveles L0–L6', icon: 'ladder', roles: ['partner', 'direccion'] },
+  { to: '/crm', label: 'CRM de oportunidades', icon: 'briefcase', roles: ['partner', 'lider_regional', 'direccion'] },
+  { to: '/academia', label: 'Academia Comercial', icon: 'book', roles: ['partner', 'lider_regional', 'direccion'] },
+  { to: '/niveles', label: 'Niveles L0–L6', icon: 'ladder', roles: ['partner', 'lider_regional', 'direccion'] },
   { to: '/perfil', label: 'Mi perfil', icon: 'user', roles: ['partner'] },
   { to: '/arquitectura', label: 'Arquitectura y etapas', icon: 'layers', roles: ['direccion'] },
 ]
 
 export default function AppLayout() {
-  const { role, setRole, partner } = useRole()
+  const { role, logout, partner, ready } = useRole()
   const [open, setOpen] = useState(false)
   const location = useLocation()
   const navigate = useNavigate()
@@ -30,16 +30,11 @@ export default function AppLayout() {
     return () => window.removeEventListener('keydown', onKey)
   }, [open])
 
+  if (!ready) return null
   if (!role) return <Navigate to="/acceso" replace />
 
   const items = nav.filter((n) => n.roles.includes(role))
-  const roleLabel = role === 'partner' ? `${partner.name} · ${partner.id}` : 'Dirección Comercial'
-
-  const switchRole = () => {
-    const next = role === 'partner' ? 'direccion' : 'partner'
-    setRole(next)
-    navigate(next === 'partner' ? '/' : '/direccion')
-  }
+  const roleLabel = `${partner.name} · ${partner.id}`
 
   return (
     <div className="app">
@@ -63,10 +58,7 @@ export default function AppLayout() {
         </nav>
         <div className="sidebar__foot">
           <p className="sidebar__who">{roleLabel}</p>
-          <button type="button" className="sidebar__switch" onClick={switchRole}>
-            <Icon name="users" size={18} /> Ver como {role === 'partner' ? 'Dirección' : 'Partner'}
-          </button>
-          <button type="button" className="sidebar__switch" onClick={() => { setRole(null); navigate('/acceso') }}>
+          <button type="button" className="sidebar__switch" onClick={async () => { await logout(); navigate('/acceso') }}>
             <Icon name="logout" size={18} /> Salir
           </button>
         </div>
@@ -80,7 +72,7 @@ export default function AppLayout() {
             <Icon name={open ? 'close' : 'menu'} size={22} />
           </button>
           <p className="topbar__demo"><Icon name="info" size={16} /> Base de demostración con datos de muestra</p>
-          {role === 'partner' && <p className="topbar__territory"><Icon name="map" size={16} /> {partner.territory}</p>}
+          {partner.territory && <p className="topbar__territory"><Icon name="map" size={16} /> {partner.territory}</p>}
         </header>
         <main className="app__main" id="contenido" tabIndex={-1}>
           <Outlet />
