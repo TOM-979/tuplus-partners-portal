@@ -11,6 +11,9 @@ const accounts = {
 }
 const sessionSecret = process.env.SESSION_SECRET || 'tuplus-demo-only-change-before-production'
 const ownData = opportunities.map((item) => ({ ...item }))
+const liveTerritories = territories.map((t) => ({ ...t }))
+const liveApplications = applications.map((a) => ({ ...a }))
+const cors = { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Methods': 'GET, POST, OPTIONS', 'Access-Control-Allow-Headers': 'Content-Type' }
 const partnerTerritories = { 'P-014': 'Barranca', 'P-022': 'Lima Metropolitana', 'P-031': 'Barranca' }
 const forbidden = { error: 'No tienes permiso para ver esta sección' }
 
@@ -66,6 +69,36 @@ export default async function handler(req, res) {
       return send(res, 200, { user: safeUser }, { 'Set-Cookie': `tuplus_session=${token}; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=28800` })
     } catch { return send(res, 400, { error: 'Solicitud inválida' }) }
   }
+   if (path === '/api/convocatorias' && method === 'GET') {
+    const lista = liveTerritories.map(({ id, name, state }) => ({ id, name, state }))
+    return send(res, 200, { territories: lista }, { 'Access-Control-Allow-Origin': '*' })
+  }
+
+  if (path === '/api/postulaciones') {
+    if (method === 'OPTIONS') return send(res, 200, {}, cors)
+    if (method === 'POST') {
+      try {
+        const body = await readBody(req)
+        const name = String(body.name || '').trim()
+        const email = String(body.email || '').trim()
+        const phone = String(body.phone || '').trim()
+        const target = liveTerritories.find((t) => t.id === body.territory)
+        if (!name || !email.includes('@') || !phone) return send(res, 400, { error: 'Faltan datos obligatorios' }, cors)
+        if (!target) return send(res, 400, { error: 'Territorio no válido' }, cors)
+        if (target.state !== 'abierta') return send(res, 409, { error: 'Convocatoria cerrada' }, cors)
+        const nueva = {
+          id: `POST-${String(41 + liveApplications.length).padStart(4, '0')}`,
+          territory: target.name,
+          score: 0,
+          state: 'recibida',
+          date: new Date().toISOString().slice(0, 10),
+          contact: { name, email, phone },
+        }
+        liveApplications.push(nueva)
+        return send(res, 201, { id: nueva.id }, cors)
+      } catch { return send(res, 400, { error: 'Solicitud inválida' }, cors) }
+    }
+  }
 
   const user = getSession(req)
   if (path === '/api/session' && method === 'DELETE') {
@@ -99,9 +132,21 @@ export default async function handler(req, res) {
     return send(res, 200, { opportunities: data })
   }
 
-  if (path === '/api/direccion' && method === 'GET') {
+    if (path === '/api/direccion' && method === 'GET') {
     if (user.role !== 'direccion') return send(res, 403, forbidden)
-    return send(res, 200, { territories, applications, opportunities: ownData })
+    return send(res, 200, { territories: liveTerritories, applications: liveApplications, opportunities: ownData })
+  }
+
+  if (path === '/api/territorios' && method === 'PATCH') {
+    if (user.role !== 'direccion') return send(res, 403, forbidden)
+    try {
+      const { id, state } = await readBody(req)
+      const validos = ['abierta', 'revision', 'proximamente', 'cerrada', 'activa']
+      const target = liveTerritories.find((t) => t.id === id)
+      if (!target || !validos.includes(state)) return send(res, 400, { error: 'Datos no válidos' })
+      target.state = state
+      return send(res, 200, { id: target.id, state: target.state })
+    } catch { return send(res, 400, { error: 'Solicitud inválida' }) }
   }
 
   return send(res, 404, { error: 'No encontrado' })

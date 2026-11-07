@@ -41,7 +41,20 @@ export default function Direccion() {
     setHistory((h) => [{ id, from: applicationStates[before].label, to: applicationStates[state].label, actor: 'Dirección Comercial', at: now() }, ...h])
   }
 
-  const setTerritoryState = (id, state) => setTerritories((list) => list.map((t) => (t.id === id ? { ...t, state } : t)))
+  const setTerritoryState = async (id, state) => {
+    try {
+      const response = await fetch('/api/territorios', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ id, state }),
+      })
+      if (!response.ok) throw new Error()
+      setTerritories((list) => list.map((t) => (t.id === id ? { ...t, state } : t)))
+    } catch {
+      alert('No se pudo guardar el cambio de estado')
+    }
+  }
 
   const totalPartners = territories.reduce((s, t) => s + t.partners, 0)
   const won = opportunities.filter((o) => ['cierre', 'posventa'].includes(o.stage)).length
@@ -97,6 +110,7 @@ export default function Direccion() {
                   </div>
                   <Badge tone={applicationStates[a.state].tone}>{applicationStates[a.state].label}</Badge>
                 </div>
+                              {a.contact && <p className="muted">{a.contact.name} · {a.contact.email} · {a.contact.phone}</p>}
                 <p className="dir-app__score">Puntaje de apoyo: <strong>{a.score}</strong> / 100</p>
                 <div className="dir-app__actions">
                   {decisions.map((d) => (
