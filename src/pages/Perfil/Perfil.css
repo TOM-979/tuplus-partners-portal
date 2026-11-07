@@ -15,6 +15,15 @@
 .profile-certs li { display: flex; align-items: center; gap: var(--space-3); font-size: var(--text-sm); }
 .profile-certs svg { color: var(--gold-ink); flex: none; }
 .profile-certs span { flex: 1; }
+.profile-form { margin-bottom: var(--space-4); }
+.profile-form__fields { display: grid; gap: var(--space-4); grid-template-columns: repeat(2, minmax(0, 1fr)); margin-bottom: var(--space-3); }
+.profile-ok { color: var(--ok); font-size: var(--text-sm); margin: 0 0 var(--space-4); }
+.profile-historial { display: grid; gap: var(--space-3); margin-top: var(--space-3); font-size: var(--text-sm); }
+.profile-historial li { border-top: 1px solid var(--line); padding-top: var(--space-3); }
+.profile-historial li:first-child { border-top: 0; padding-top: 0; }
+@media (max-width: 640px) {
+  .profile-form__fields { grid-template-columns: minmax(0, 1fr); }
+}
 @media (max-width: 900px) {
   .profile-grid { grid-template-columns: minmax(0, 1fr); }
   .profile-grid > :first-child { grid-row: auto; }

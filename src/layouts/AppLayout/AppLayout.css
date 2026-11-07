@@ -21,6 +21,7 @@
 
 .sidebar__foot { margin-top: auto; display: grid; gap: var(--space-1); padding-top: var(--space-4); border-top: 1px solid rgba(255, 255, 255, 0.1); }
 .sidebar__who { font-size: var(--text-xs); color: #9aa8ba; padding: 0 var(--space-3) var(--space-2); }
+.sidebar__badge { display: flex; align-items: center; gap: var(--space-1); font-size: var(--text-xs); color: var(--gold, #cb9d54); padding: 0 var(--space-3) var(--space-2); }
 .sidebar__switch {
   display: flex; align-items: center; gap: var(--space-3); min-height: var(--touch);
   padding: 0 var(--space-3); border: 0; border-radius: var(--radius-sm);

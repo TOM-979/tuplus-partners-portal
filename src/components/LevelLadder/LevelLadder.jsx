@@ -1,17 +1,24 @@
 import './LevelLadder.css'
-import { levels } from '../../data/levels.js'
 
-// Escalera de rangos L0–L5: cada peldaño sube según el nivel.
-// L6 (Líder Regional) va aparte porque es una función, no un peldaño.
+// Rangos L0–L5 en orden. Son fijos (vienen de WEB-02); L6 Líder Regional es una función
+// aparte y no entra en esta escalera.
+const RANKS = [
+  { code: 'L0', name: 'Postulante' },
+  { code: 'L1', name: 'Candidato en formación' },
+  { code: 'L2', name: 'Socio Comercial TUPLUS' },
+  { code: 'L3', name: 'Consultor B2B TUPLUS' },
+  { code: 'L4', name: 'Senior Partner TUPLUS' },
+  { code: 'L5', name: 'MASTER PARTNER TUPLUS' },
+]
+
 export default function LevelLadder({ current, selected, onSelect, size = 'md' }) {
-  const ranks = levels.filter((l) => l.kind === 'rango')
-  const currentIndex = ranks.findIndex((l) => l.code === current)
+  const currentIndex = RANKS.findIndex((l) => l.code === current)
   const interactive = Boolean(onSelect)
 
   return (
     <div className={`ladder ladder--${size}`}>
       <ol className="ladder__steps" aria-label="Rangos de la Red de Socios">
-        {ranks.map((l, i) => {
+        {RANKS.map((l, i) => {
           const status = i < currentIndex ? 'done' : i === currentIndex ? 'current' : 'next'
           const content = (
             <>

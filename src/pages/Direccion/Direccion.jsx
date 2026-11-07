@@ -1,68 +1,128 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import './Direccion.css'
 import PageHeader from '../../components/PageHeader/PageHeader.jsx'
 import StatCard from '../../components/StatCard/StatCard.jsx'
 import Badge from '../../components/Badge/Badge.jsx'
-import ProgressBar from '../../components/ProgressBar/ProgressBar.jsx'
 import Icon from '../../components/Icon/Icon.jsx'
-import { territories as seedTerritories, territoryStates } from '../../data/territories.js'
-import { applications as seedApps, applicationStates } from '../../data/applications.js'
-import { opportunities } from '../../data/crm.js'
+import { Cargando, ErrorEstado, Vacio } from '../../components/Estado/Estado.jsx'
+import { useAuth, ApiError } from '../../context/AuthContext.jsx'
+import { api } from '../../lib/api.js'
 
-const decisions = [
-  { state: 'preseleccionado', label: 'Preseleccionar' },
-  { state: 'aclaracion', label: 'Pedir aclaración' },
-  { state: 'no_seleccionado', label: 'No seleccionar' },
+const TERRITORIO_ESTADO = {
+  abierta: { label: 'Convocatoria abierta', tone: 'ok' },
+  revision: { label: 'Revisión en curso', tone: 'info' },
+  proximamente: { label: 'Próximamente', tone: 'warn' },
+  cerrada: { label: 'Convocatoria cerrada', tone: 'neutral' },
+  activa: { label: 'Operación activa', tone: 'gold' },
+}
+const POSTULACION_ESTADO = {
+  recibida: { label: 'Postulación recibida', tone: 'info' },
+  preseleccionado: { label: 'Preseleccionado', tone: 'ok' },
+  aclaracion: { label: 'Aclaración pedida', tone: 'warn' },
+  no_seleccionado: { label: 'No seleccionado', tone: 'neutral' },
+  aprobado: { label: 'Activado como Partner', tone: 'gold' },
+}
+const decisiones = [
+  { estado: 'preseleccionado', label: 'Preseleccionar' },
+  { estado: 'aclaracion', label: 'Pedir aclaración' },
+  { estado: 'no_seleccionado', label: 'No seleccionar' },
 ]
 
-// Panel de Dirección y Gestión: red, territorios, revisión humana y comisiones (bloqueadas)
 export default function Direccion() {
-  const [territories, setTerritories] = useState(seedTerritories)
-  const [apps, setApps] = useState(seedApps)
-  const [history, setHistory] = useState([])
+  const { usuario } = useAuth()
+  const soloDireccion = usuario.rol === 'direccion'
 
-  const now = () => new Date().toLocaleString('es-PE', { timeZone: 'America/Lima', dateStyle: 'short', timeStyle: 'short' })
+  const [datos, setDatos] = useState(null)
+  const [estado, setEstado] = useState({ cargando: true, error: '' })
+  const [procesando, setProcesando] = useState(null)
+  const [aviso, setAviso] = useState('')
 
-  const decide = (id, state) => {
-    const before = apps.find((a) => a.id === id).state
-    setApps((list) => list.map((a) => (a.id === id ? { ...a, state } : a)))
-    setHistory((h) => [{ id, from: applicationStates[before].label, to: applicationStates[state].label, actor: 'Dirección Comercial', at: now() }, ...h])
+  const cargar = () => {
+    setEstado({ cargando: true, error: '' })
+    Promise.all([api.get('/direccion/resumen'), api.get('/direccion/postulaciones'), api.get('/direccion/territorios')])
+      .then(([r, p, t]) => setDatos({ resumen: r.dato, postulaciones: p.datos, territorios: t.datos }))
+      .catch((err) => setEstado({ cargando: false, error: err instanceof ApiError ? err.message : 'No se pudo cargar el panel de Dirección.' }))
+      .finally(() => setEstado((e) => ({ ...e, cargando: false })))
+  }
+  useEffect(cargar, [])
+
+  const decidir = async (id, nuevoEstado) => {
+    setProcesando(id)
+    try {
+      const r = await api.patch(`/direccion/postulaciones/${id}`, { estado: nuevoEstado })
+      setDatos((d) => ({ ...d, postulaciones: d.postulaciones.map((p) => (p.id === id ? r.dato : p)) }))
+      setAviso(`${r.dato.codigo}: ${POSTULACION_ESTADO[nuevoEstado].label}.`)
+    } catch (err) {
+      setAviso(err instanceof ApiError ? err.message : 'No se pudo actualizar la postulación.')
+    } finally {
+      setProcesando(null)
+    }
   }
 
-  const setTerritoryState = (id, state) => setTerritories((list) => list.map((t) => (t.id === id ? { ...t, state } : t)))
+  const activar = async (id) => {
+    setProcesando(id)
+    try {
+      const r = await api.post(`/direccion/postulaciones/${id}/activar`)
+      setDatos((d) => ({ ...d, postulaciones: d.postulaciones.map((p) => (p.id === id ? { ...p, estado: 'aprobado' } : p)) }))
+      setAviso(`Activado como Partner ${r.dato.codigo}. Se envió la contraseña temporal a su correo.`)
+    } catch (err) {
+      setAviso(err instanceof ApiError ? err.message : 'No se pudo activar la postulación.')
+    } finally {
+      setProcesando(null)
+    }
+  }
 
-  const totalPartners = territories.reduce((s, t) => s + t.partners, 0)
-  const won = opportunities.filter((o) => ['cierre', 'posventa'].includes(o.stage)).length
+  const cambiarTerritorio = async (id, nuevoEstado) => {
+    const anterior = datos.territorios.find((t) => t.id === id).estado
+    setDatos((d) => ({ ...d, territorios: d.territorios.map((t) => (t.id === id ? { ...t, estado: nuevoEstado } : t)) }))
+    try {
+      await api.patch(`/direccion/territorios/${id}`, { estado: nuevoEstado })
+    } catch (err) {
+      setDatos((d) => ({ ...d, territorios: d.territorios.map((t) => (t.id === id ? { ...t, estado: anterior } : t)) }))
+      setAviso(err instanceof ApiError ? err.message : 'No se pudo cambiar el estado del territorio.')
+    }
+  }
+
+  if (estado.cargando) return <div className="card"><Cargando texto="Cargando el panel de Dirección…" /></div>
+  if (estado.error) return <div className="card"><ErrorEstado mensaje={estado.error} onReintentar={cargar} /></div>
+
+  const { resumen, postulaciones, territorios } = datos
+  const pendientes = postulaciones.filter((p) => p.estado === 'recibida')
 
   return (
     <>
-      <PageHeader title="Panel de Dirección" description="Supervisión de la red, los territorios y las postulaciones. Todas las cifras son de muestra." />
+      <PageHeader title="Panel de Dirección" description={soloDireccion ? 'Supervisión de la red, los territorios y las postulaciones.' : 'Supervisión de tu territorio como Líder Regional.'} />
 
       <div className="dir-stats">
-        <StatCard label="Partners activos" value={totalPartners} note="En territorios habilitados" />
-        <StatCard label="Postulaciones por revisar" value={apps.filter((a) => a.state === 'recibida').length} />
-        <StatCard label="Oportunidades abiertas" value={opportunities.length - won} />
-        <StatCard label="Cierres y posventa" value={won} />
+        <StatCard label="Partners activos" value={resumen.partners.activos ?? 0} note={`de ${resumen.partners.total} en total`} />
+        <StatCard label="Postulaciones por revisar" value={pendientes.length} />
+        <StatCard label="Preseleccionadas" value={resumen.postulaciones.preseleccionadas ?? 0} />
+        <StatCard label="Activadas como Partner" value={resumen.postulaciones.aprobadas ?? 0} />
       </div>
+
+      <p className="visually-hidden" aria-live="polite">{aviso}</p>
 
       <section className="dir-section" aria-labelledby="territorios">
         <h2 id="territorios">Territorios y convocatorias</h2>
-        <p className="muted">Abre, pausa o cierra una convocatoria sin tocar código. La web corporativa mostrará el estado elegido.</p>
+        <p className="muted">Abre, pausa o cierra una convocatoria. La web corporativa muestra el estado elegido.</p>
         <div className="table-wrap">
           <table>
-            <thead><tr><th>Territorio</th><th>Estado</th><th>Cupos ocupados</th><th>Responsable</th><th>Cambiar estado</th></tr></thead>
+            <thead><tr><th>Territorio</th><th>Estado</th><th>Cupos</th><th>{soloDireccion ? 'Cambiar estado' : ''}</th></tr></thead>
             <tbody>
-              {territories.map((t) => (
+              {territorios.map((t) => (
                 <tr key={t.id}>
-                  <td><strong>{t.name}</strong><br /><span className="muted">{t.region}</span></td>
-                  <td><Badge tone={territoryStates[t.state].tone}>{territoryStates[t.state].label}</Badge></td>
-                  <td className="dir-cap">{t.capacity ? <ProgressBar value={t.partners} max={t.capacity} label={`Cupos ocupados en ${t.name}`} /> : <span className="muted">Sin cupo definido</span>}</td>
-                  <td>{t.owner}</td>
+                  <td><strong>{t.nombre}</strong><br /><span className="muted">{t.region}</span></td>
+                  <td><Badge tone={(TERRITORIO_ESTADO[t.estado] || TERRITORIO_ESTADO.proximamente).tone}>{(TERRITORIO_ESTADO[t.estado] || TERRITORIO_ESTADO.proximamente).label}</Badge></td>
+                  <td className="dir-cap">{t.capacidad ? <span className="muted">Cupo: {t.capacidad}</span> : <span className="muted">Sin cupo definido</span>}</td>
                   <td>
-                    <label className="visually-hidden" htmlFor={`st-${t.id}`}>Estado de {t.name}</label>
-                    <select id={`st-${t.id}`} className="dir-select" value={t.state} onChange={(e) => setTerritoryState(t.id, e.target.value)}>
-                      {Object.entries(territoryStates).map(([k, v]) => <option key={k} value={k}>{v.label}</option>)}
-                    </select>
+                    {soloDireccion && (
+                      <>
+                        <label className="visually-hidden" htmlFor={`st-${t.id}`}>Estado de {t.nombre}</label>
+                        <select id={`st-${t.id}`} className="dir-select" value={t.estado} onChange={(e) => cambiarTerritorio(t.id, e.target.value)}>
+                          {Object.entries(TERRITORIO_ESTADO).map(([k, v]) => <option key={k} value={k}>{v.label}</option>)}
+                        </select>
+                      </>
+                    )}
                   </td>
                 </tr>
               ))}
@@ -74,45 +134,42 @@ export default function Direccion() {
       <div className="dir-grid">
         <section className="dir-section" aria-labelledby="bandeja">
           <h2 id="bandeja">Bandeja de revisión</h2>
-          <p className="muted">El puntaje ayuda a priorizar; la decisión la toma una persona y queda registrada.</p>
-          <ul className="dir-apps">
-            {apps.map((a) => (
-              <li key={a.id} className="card dir-app">
-                <div className="dir-app__head">
-                  <div>
-                    <p className="dir-app__id">{a.id}</p>
-                    <p className="muted">{a.territory} · recibida el {a.date}</p>
+          <p className="muted">La decisión la toma una persona y queda registrada en el historial.</p>
+          {postulaciones.length === 0 ? (
+            <Vacio titulo="No hay postulaciones todavía" texto="Aparecerán aquí en cuanto alguien postule a la Red." icono="info" />
+          ) : (
+            <ul className="dir-apps">
+              {postulaciones.map((a) => (
+                <li key={a.id} className="card dir-app">
+                  <div className="dir-app__head">
+                    <div>
+                      <p className="dir-app__id">{a.codigo} · {a.nombre}</p>
+                      <p className="muted">{a.territorio} · recibida el {new Date(a.creado_en).toLocaleDateString('es-PE')}</p>
+                    </div>
+                    <Badge tone={POSTULACION_ESTADO[a.estado].tone}>{POSTULACION_ESTADO[a.estado].label}</Badge>
                   </div>
-                  <Badge tone={applicationStates[a.state].tone}>{applicationStates[a.state].label}</Badge>
-                </div>
-                <p className="dir-app__score">Puntaje de apoyo: <strong>{a.score}</strong> / 100</p>
-                <div className="dir-app__actions">
-                  {decisions.map((d) => (
-                    <button key={d.state} type="button" className="btn btn-ghost" disabled={a.state === d.state} onClick={() => decide(a.id, d.state)}>{d.label}</button>
-                  ))}
-                </div>
-              </li>
-            ))}
-          </ul>
+                  {a.estado !== 'aprobado' && (
+                    <div className="dir-app__actions">
+                      {decisiones.map((d) => (
+                        <button key={d.estado} type="button" className="btn btn-ghost" disabled={a.estado === d.estado || procesando === a.id}
+                          onClick={() => decidir(a.id, d.estado)}>{d.label}</button>
+                      ))}
+                      <button type="button" className="btn btn-gold" disabled={procesando === a.id} onClick={() => activar(a.id)}>
+                        {procesando === a.id ? 'Procesando…' : 'Activar como Partner'}
+                      </button>
+                    </div>
+                  )}
+                </li>
+              ))}
+            </ul>
+          )}
         </section>
 
         <aside className="dir-side">
-          <section className="card" aria-labelledby="historial">
-            <h2 id="historial">Historial de cambios</h2>
-            {history.length === 0
-              ? <p className="muted dir-empty">Aún no hay decisiones en esta sesión. Cada cambio guarda quién lo hizo y cuándo.</p>
-              : (
-                <ol className="dir-history" aria-live="polite">
-                  {history.map((h, i) => (
-                    <li key={i}><strong>{h.id}</strong>: {h.from} → {h.to}<br /><span className="muted">{h.actor} · {h.at}</span></li>
-                  ))}
-                </ol>
-              )}
-          </section>
           <section className="card dir-locked" aria-labelledby="comisiones">
             <Icon name="lock" />
             <h2 id="comisiones">Comisiones</h2>
-            <p>Bloqueado hasta la validación directiva, legal, contable y tributaria (Etapa 4). No se publican porcentajes sin aprobación.</p>
+            <p>Bloqueado hasta la validación directiva, legal, contable y tributaria. No se publican porcentajes sin aprobación.</p>
           </section>
         </aside>
       </div>

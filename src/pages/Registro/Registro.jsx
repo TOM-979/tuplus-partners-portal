@@ -4,13 +4,25 @@ import './Registro.css'
 import Field from '../../components/Field/Field.jsx'
 import Badge from '../../components/Badge/Badge.jsx'
 import Icon from '../../components/Icon/Icon.jsx'
-import { territories, territoryStates } from '../../data/territories.js'
+import { Cargando, ErrorEstado } from '../../components/Estado/Estado.jsx'
+import { api, ApiError } from '../../lib/api.js'
 
 // Postulación a la Red en pasos (WEB-02, RF-03 y RF-04).
 // El primer formulario NO pide documento de identidad ni datos bancarios (minimización por etapa).
 const steps = ['Contacto', 'Territorio', 'Experiencia', 'Consentimiento', 'Revisión']
 const DRAFT_KEY = 'tuplus-postulacion-borrador'
-const CONSENT_VERSION = 'Privacidad v1.0 · Términos de la Red v1.0 (borrador)'
+const CONSENT_VERSION = 'v1.0'
+
+const ESTADO_INFO = {
+  abierta: { label: 'Convocatoria abierta', tone: 'ok' },
+  revision: { label: 'Revisión en curso', tone: 'info' },
+  proximamente: { label: 'Próximamente', tone: 'warn' },
+  cerrada: { label: 'Convocatoria cerrada', tone: 'neutral' },
+  activa: { label: 'Operación activa', tone: 'gold' },
+}
+
+const EXPERIENCIA = [['sin_experiencia', 'Sin experiencia'], ['menos_1', 'Menos de 1 año'], ['1_3', '1 a 3 años'], ['mas_3', 'Más de 3 años']]
+const DISPONIBILIDAD = [['hasta_5', 'Hasta 5 horas'], ['5_10', '5 a 10 horas'], ['10_20', '10 a 20 horas'], ['mas_20', 'Más de 20 horas']]
 
 const empty = { nombre: '', correo: '', telefono: '', territorio: '', experiencia: '', sectores: '', disponibilidad: '', motivo: '', privacidad: false, terminos: false }
 
@@ -31,12 +43,27 @@ const rules = {
 const fieldsByStep = [['nombre', 'correo', 'telefono'], ['territorio'], ['experiencia', 'disponibilidad'], ['privacidad', 'terminos'], []]
 
 export default function Registro() {
+  const [territorios, setTerritorios] = useState(null)
+  const [cargando, setCargando] = useState(true)
+  const [errorCarga, setErrorCarga] = useState('')
+
   const [step, setStep] = useState(0)
   const [data, setData] = useState(loadDraft)
   const [errors, setErrors] = useState({})
   const [saved, setSaved] = useState(false)
   const [sent, setSent] = useState(false)
+  const [enviando, setEnviando] = useState(false)
+  const [errorEnvio, setErrorEnvio] = useState('')
   const headingRef = useRef(null)
+
+  const cargarTerritorios = () => {
+    setCargando(true); setErrorCarga('')
+    api.get('/territorios', { auth: false })
+      .then((r) => setTerritorios(r.datos))
+      .catch((err) => setErrorCarga(err instanceof ApiError ? err.message : 'No se pudieron cargar los territorios.'))
+      .finally(() => setCargando(false))
+  }
+  useEffect(cargarTerritorios, [])
 
   // Borrador en este navegador, sin los consentimientos
   useEffect(() => {
@@ -70,19 +97,41 @@ export default function Registro() {
 
   const next = () => validateStep() && setStep((s) => s + 1)
   const back = () => setStep((s) => s - 1)
-  const submit = () => {
-    setSent(true)
-    try { localStorage.removeItem(DRAFT_KEY) } catch { /* sin almacenamiento */ }
+
+  const submit = async () => {
+    setErrorEnvio(''); setEnviando(true)
+    try {
+      await api.post('/postulaciones', {
+        nombre: data.nombre.trim(),
+        correo: data.correo.trim().toLowerCase(),
+        telefono: data.telefono.trim(),
+        territorioId: Number(data.territorio),
+        experiencia: data.experiencia,
+        disponibilidad: data.disponibilidad,
+        sectores: data.sectores.trim() || undefined,
+        motivo: data.motivo.trim() || undefined,
+        consentimiento: { privacidad: true, terminos: true, version: CONSENT_VERSION },
+      }, { auth: false })
+      setSent(true)
+      try { localStorage.removeItem(DRAFT_KEY) } catch { /* sin almacenamiento */ }
+    } catch (err) {
+      setErrorEnvio(err instanceof ApiError ? err.message : 'No se pudo enviar la postulación. Inténtalo de nuevo.')
+    } finally {
+      setEnviando(false)
+    }
   }
 
-  const territory = territories.find((t) => t.id === data.territorio)
+  if (cargando) return <div className="card"><Cargando texto="Cargando los territorios disponibles…" /></div>
+  if (errorCarga) return <div className="card"><ErrorEstado mensaje={errorCarga} onReintentar={cargarTerritorios} /></div>
+
+  const territory = territorios.find((t) => String(t.id) === data.territorio)
   const input = (name, props = {}) => (a) => (
     <input {...a} name={name} value={data[name]} onChange={(e) => set(name, e.target.value)} onBlur={() => blur(name)} {...props} />
   )
   const select = (name, options) => (a) => (
     <select {...a} name={name} value={data[name]} onChange={(e) => set(name, e.target.value)} onBlur={() => blur(name)}>
       <option value="">Elige una opción</option>
-      {options.map((o) => <option key={o} value={o}>{o}</option>)}
+      {options.map(([value, label]) => <option key={value} value={value}>{label}</option>)}
     </select>
   )
 
@@ -91,11 +140,10 @@ export default function Registro() {
       <section className="card apply apply--done" aria-labelledby="enviado">
         <span className="apply__done-icon"><Icon name="check" size={28} /></span>
         <h1 id="enviado" tabIndex={-1} ref={headingRef}>Postulación recibida</h1>
-        <p>Gracias, {data.nombre.split(' ')[0]}. Un responsable de {territory?.name} revisará tu postulación.</p>
+        <p>Gracias, {data.nombre.split(' ')[0]}. Un responsable de {territory?.nombre} revisará tu postulación.</p>
         <p className="apply__warning">
           Postular no garantiza el ingreso a la Red y no te autoriza a representar a TUPLUS. Te escribiremos al correo que dejaste.
         </p>
-        <p className="muted apply__demo">Demostración: en esta base no se envía ningún dato. La Etapa 1 conecta el formulario con la API y guarda la postulación.</p>
         <Link className="btn btn-ghost" to="/acceso"><Icon name="arrowLeft" size={18} /> Volver al acceso</Link>
       </section>
     )
@@ -130,21 +178,20 @@ export default function Registro() {
         {step === 1 && (
           <fieldset className="apply__territories">
             <legend>¿En qué territorio trabajarías?</legend>
-            {territories.map((t) => {
-              const st = territoryStates[t.state]
-              const available = t.state === 'abierta'
+            {territorios.map((t) => {
+              const st = ESTADO_INFO[t.estado] || ESTADO_INFO.proximamente
               return (
-                <label key={t.id} className={`territory${data.territorio === t.id ? ' is-selected' : ''}${available ? '' : ' is-muted'}`}>
-                  <input type="radio" name="territorio" id={t.id === territories[0].id ? 'territorio' : undefined}
-                    value={t.id} checked={data.territorio === t.id} onChange={() => set('territorio', t.id)} />
-                  <span className="territory__name">{t.name}<small>{t.region}</small></span>
+                <label key={t.id} className={`territory${data.territorio === String(t.id) ? ' is-selected' : ''}${t.estado === 'abierta' ? '' : ' is-muted'}`}>
+                  <input type="radio" name="territorio" id={t.id === territorios[0].id ? 'territorio' : undefined}
+                    value={t.id} checked={data.territorio === String(t.id)} onChange={() => set('territorio', String(t.id))} />
+                  <span className="territory__name">{t.nombre}<small>{t.region}</small></span>
                   <Badge tone={st.tone}>{st.label}</Badge>
                 </label>
               )
             })}
             {errors.territorio && <p className="field__error">{errors.territorio}</p>}
-            {territory && territory.state !== 'abierta' && (
-              <p className="apply__info"><Icon name="info" size={16} /> {territory.name} aún no recibe postulaciones. Guardaremos tu interés para avisarte cuando abra la convocatoria.</p>
+            {territory && territory.estado !== 'abierta' && (
+              <p className="apply__info"><Icon name="info" size={16} /> {territory.nombre} aún no recibe postulaciones. Puedes elegir otro territorio abierto, o esperar a que abra la convocatoria.</p>
             )}
           </fieldset>
         )}
@@ -152,11 +199,11 @@ export default function Registro() {
         {step === 2 && (
           <div className="apply__fields">
             <Field id="experiencia" label="Experiencia en ventas a empresas" error={errors.experiencia}>
-              {select('experiencia', ['Sin experiencia', 'Menos de 1 año', '1 a 3 años', 'Más de 3 años'])}
+              {select('experiencia', EXPERIENCIA)}
             </Field>
             <Field id="sectores" label="Sectores que conoces (opcional)" hint="Ejemplo: salud, educación, comercio">{input('sectores')}</Field>
             <Field id="disponibilidad" label="Horas por semana que puedes dedicar" error={errors.disponibilidad}>
-              {select('disponibilidad', ['Hasta 5 horas', '5 a 10 horas', '10 a 20 horas', 'Más de 20 horas'])}
+              {select('disponibilidad', DISPONIBILIDAD)}
             </Field>
             <Field id="motivo" label="¿Por qué quieres ser Partner? (opcional)">
               {(a) => <textarea {...a} value={data.motivo} onChange={(e) => set('motivo', e.target.value)} maxLength={500} />}
@@ -181,19 +228,22 @@ export default function Registro() {
 
         {step === 4 && (
           <dl className="apply__review">
-            {[['Nombre', data.nombre], ['Correo', data.correo], ['Teléfono', data.telefono], ['Territorio', territory?.name],
-              ['Experiencia', data.experiencia], ['Sectores', data.sectores || 'No indicado'], ['Disponibilidad', data.disponibilidad]].map(([k, v]) => (
+            {[['Nombre', data.nombre], ['Correo', data.correo], ['Teléfono', data.telefono], ['Territorio', territory?.nombre],
+              ['Experiencia', EXPERIENCIA.find(([v]) => v === data.experiencia)?.[1]], ['Sectores', data.sectores || 'No indicado'],
+              ['Disponibilidad', DISPONIBILIDAD.find(([v]) => v === data.disponibilidad)?.[1]]].map(([k, v]) => (
               <div key={k}><dt>{k}</dt><dd>{v}</dd></div>
             ))}
           </dl>
         )}
 
+        {errorEnvio && <p className="field__error" role="alert">{errorEnvio}</p>}
+
         <div className="apply__actions">
-          {step > 0 && <button type="button" className="btn btn-ghost" onClick={back}>Volver</button>}
+          {step > 0 && <button type="button" className="btn btn-ghost" onClick={back} disabled={enviando}>Volver</button>}
           <span className="apply__saved" aria-live="polite">{saved && step < 4 ? 'Borrador guardado en este navegador' : ''}</span>
           {step < steps.length - 1
             ? <button key="continuar" type="button" className="btn btn-primary" onClick={next}>Continuar</button>
-            : <button key="enviar" type="button" className="btn btn-gold" onClick={submit}>Enviar postulación</button>}
+            : <button key="enviar" type="button" className="btn btn-gold" onClick={submit} disabled={enviando}>{enviando ? 'Enviando…' : 'Enviar postulación'}</button>}
         </div>
       </div>
     </section>
