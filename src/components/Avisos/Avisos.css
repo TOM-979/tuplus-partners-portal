@@ -1,0 +1,108 @@
+/* Banner sin conexion */
+.banner-sin-conexion {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background-color: #b91c1c;
+  color: #ffffff;
+  padding: 0.75rem 1.5rem;
+  z-index: 9999;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  animation: bannerEntrada 0.3s ease;
+}
+
+.banner-contenido {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.banner-icono {
+  font-size: 1.2rem;
+  line-height: 1;
+}
+
+.banner-mensaje {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+/* Sesion Vencida */
+.modal-sesion-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(7, 23, 44, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  z-index: 10000;
+  backdrop-filter: blur(3px);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.modal-sesion-tarjeta {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  max-width: 440px;
+  width: 100%;
+  padding: 2.25rem 2rem;
+  text-align: center;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
+}
+
+.modal-sesion-icono {
+  font-size: 2.25rem;
+  margin-bottom: 0.75rem;
+}
+
+.modal-sesion-titulo {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #081d3a;
+  margin: 0 0 0.75rem 0;
+}
+
+.modal-sesion-texto {
+  font-size: 0.95rem;
+  color: #64748b;
+  line-height: 1.55;
+  margin: 0 0 1.75rem 0;
+}
+
+.modal-sesion-boton {
+  width: 100%;
+  background-color: #07172c;
+  color: #ffffff;
+  border: none;
+  font-size: 0.95rem;
+  font-weight: 600;
+  padding: 0.85rem 1.25rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.modal-sesion-boton:hover {
+  background-color: #0f274a;
+}
+
+.modal-sesion-boton:active {
+  transform: scale(0.99);
+}
+
+@keyframes bannerEntrada {
+  from {
+    transform: translateY(-100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}

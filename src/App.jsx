@@ -1,3 +1,4 @@
+import React, { useState } from 'react';
 import { Route, Routes, Navigate } from 'react-router-dom'
 import AppLayout from './layouts/AppLayout/AppLayout.jsx'
 import PublicLayout from './layouts/PublicLayout/PublicLayout.jsx'
@@ -11,6 +12,10 @@ import Crm from './pages/Crm/Crm.jsx'
 import Direccion from './pages/Direccion/Direccion.jsx'
 import Arquitectura from './pages/Arquitectura/Arquitectura.jsx'
 import { useRole } from './context/RoleContext.jsx'
+import AvisosSinConexion from './components/Avisos/AvisosSinConexion.jsx';
+import SesionVencida from './components/Avisos/SesionVencida.jsx';
+import Error404 from './pages/Error404/Error404.jsx';
+
 
 // Rutas protegidas por rol (en la Etapa 1 el servidor también valida el permiso)
 function OnlyFor({ role: needed, children }) {
@@ -20,13 +25,25 @@ function OnlyFor({ role: needed, children }) {
 }
 
 export default function App() {
+  const [modalSesionAbierto, setModalSesionAbierto] = useState(false);
+
   return (
+    <>
+      <AvisosSinConexion />
+      <SesionVencida 
+        abierto={modalSesionAbierto} 
+        onCerrar={() => setModalSesionAbierto(false)} 
+      />
+      
     <Routes>
       <Route element={<PublicLayout />}>
+        <Route index element={<Navigate to="/acceso" replace />} />
+        <Route index element={<Acceso />} />
         <Route path="/acceso" element={<Acceso />} />
         <Route path="/postulacion" element={<Registro />} />
       </Route>
       <Route element={<AppLayout />}>
+        <Route path="/panel" element={<OnlyFor role="partner"><Panel /></OnlyFor>} />
         <Route index element={<OnlyFor role="partner"><Panel /></OnlyFor>} />
         <Route path="perfil" element={<OnlyFor role="partner"><Perfil /></OnlyFor>} />
         <Route path="direccion" element={<OnlyFor role="direccion"><Direccion /></OnlyFor>} />
@@ -35,7 +52,8 @@ export default function App() {
         <Route path="academia" element={<Academia />} />
         <Route path="niveles" element={<Niveles />} />
       </Route>
-      <Route path="*" element={<Navigate to="/" replace />} />
+      <Route path="*" element={<Error404 />} />
     </Routes>
+    </>
   )
 }
