@@ -3,7 +3,7 @@ import PageHeader from '../../components/PageHeader/PageHeader.jsx'
 import Badge from '../../components/Badge/Badge.jsx'
 import { architecture, stagesPlan } from '../../data/roadmap.js'
 
-const tone = { Existe: 'ok', 'Base creada': 'gold', 'Por construir': 'info', 'Por evaluar': 'warn' }
+const tone = { Existe: 'ok', Completo: 'gold', 'Base creada': 'gold', 'Por construir': 'info', 'Por evaluar': 'warn' }
 
 // Ecosistema TUPLUS y etapas del Sistema Master Partner
 export default function Arquitectura() {
@@ -18,7 +18,7 @@ export default function Arquitectura() {
 
   return (
     <>
-      <PageHeader title="Arquitectura y etapas" description="Cómo se conecta el portal con la web corporativa y qué cubre esta base en cada etapa. Las herramientas marcadas por evaluar no son decisiones definitivas." />
+      <PageHeader title="Arquitectura y etapas" description="Cómo se conecta el portal con la web corporativa y qué cubre esta entrega en cada etapa. Conectar la web y el AdminPanel con la API queda para quien despliegue — ver el README del repositorio de la API." />
 
       <section className="card arch" aria-labelledby="ecosistema">
         <h2 id="ecosistema">Ecosistema TUPLUS</h2>

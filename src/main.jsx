@@ -9,14 +9,14 @@ import '@fontsource/public-sans/600.css'
 import './styles/tokens.css'
 import './styles/base.css'
 import App from './App.jsx'
-import { RoleProvider } from './context/RoleContext.jsx'
+import { AuthProvider } from './context/AuthContext.jsx'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <BrowserRouter>
-      <RoleProvider>
+      <AuthProvider>
         <App />
-      </RoleProvider>
+      </AuthProvider>
     </BrowserRouter>
   </StrictMode>,
 )

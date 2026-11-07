@@ -1,0 +1,14 @@
+.aviso-conexion {
+  position: sticky;
+  top: 0;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: var(--color-warn-bg, #fff4d6);
+  color: var(--color-warn-text, #7a5200);
+  font-size: var(--text-sm, 0.875rem);
+  text-align: center;
+}

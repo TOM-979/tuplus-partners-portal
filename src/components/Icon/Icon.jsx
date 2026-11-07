@@ -18,12 +18,18 @@ const paths = {
   logout: <><path d="M15 4h4v16h-4" /><path d="M10 8l-4 4 4 4" /><path d="M6 12h11" /></>,
   arrowLeft: <><path d="M19 12H5" /><path d="m11 6-6 6 6 6" /></>,
   info: <><circle cx="12" cy="12" r="9" /><path d="M12 11v5" /><path d="M12 8h.01" /></>,
+  warning: <><path d="M12 3 2 20h20z" /><path d="M12 10v4" /><path d="M12 17h.01" /></>,
+  loader: <><path d="M12 3v3" /><path d="M12 18v3" /><path d="M5 5l2 2" /><path d="M17 17l2 2" /><path d="M3 12h3" /><path d="M18 12h3" /><path d="M5 19l2-2" /><path d="M17 7l2-2" /></>,
+  mail: <><rect x="3" y="5" width="18" height="14" rx="2" /><path d="m4 7 8 6 8-6" /></>,
+  wifiOff: <><path d="M2 8.5a16 16 0 0 1 20 0" opacity="0.35" /><path d="M5 12.3a11 11 0 0 1 14 0" /><path d="M8.5 16a6.5 6.5 0 0 1 7 0" /><circle cx="12" cy="19.5" r="1" /><path d="M2 2l20 20" /></>,
 }
 
-export default function Icon({ name, size = 20, ...rest }) {
+export default function Icon({ name, size = 20, className = '', ...rest }) {
+  const spin = name === 'loader' ? ' icon-spin' : ''
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" {...rest}>
+      strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"
+      className={`${className}${spin}`} {...rest}>
       {paths[name]}
     </svg>
   )

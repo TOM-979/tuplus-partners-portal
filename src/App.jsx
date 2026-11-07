@@ -10,32 +10,63 @@ import Academia from './pages/Academia/Academia.jsx'
 import Crm from './pages/Crm/Crm.jsx'
 import Direccion from './pages/Direccion/Direccion.jsx'
 import Arquitectura from './pages/Arquitectura/Arquitectura.jsx'
-import { useRole } from './context/RoleContext.jsx'
+import NoEncontrado from './pages/NoEncontrado/NoEncontrado.jsx'
+import { useAuth } from './context/AuthContext.jsx'
+import { Cargando } from './components/Estado/Estado.jsx'
+import AvisoConexion from './components/AvisoConexion/AvisoConexion.jsx'
 
-// Rutas protegidas por rol (en la Etapa 1 el servidor también valida el permiso)
-function OnlyFor({ role: needed, children }) {
-  const { role } = useRole()
-  if (role !== needed) return <Navigate to={role === 'direccion' ? '/direccion' : '/'} replace />
+// Rutas protegidas por rol. El servidor vuelve a validar cada permiso: esto solo oculta la pantalla.
+function SoloPara({ roles, children }) {
+  const { usuario } = useAuth()
+  if (!roles.includes(usuario.rol)) return <Navigate to={usuario.rol === 'partner' ? '/' : '/direccion'} replace />
   return children
 }
 
 export default function App() {
+  const { usuario, cargando } = useAuth()
+
+  if (cargando) {
+    return (
+      <div style={{ minHeight: '100vh', display: 'grid', placeItems: 'center' }}>
+        <Cargando texto="Cargando el portal…" />
+      </div>
+    )
+  }
+
+  if (!usuario) {
+    return (
+      <>
+        <AvisoConexion />
+        <Routes>
+          <Route element={<PublicLayout />}>
+            <Route path="/acceso" element={<Acceso />} />
+            <Route path="/postulacion" element={<Registro />} />
+            <Route path="*" element={<Navigate to="/acceso" replace />} />
+          </Route>
+        </Routes>
+      </>
+    )
+  }
+
   return (
-    <Routes>
+    <>
+      <AvisoConexion />
+      <Routes>
       <Route element={<PublicLayout />}>
-        <Route path="/acceso" element={<Acceso />} />
+        <Route path="/acceso" element={<Navigate to="/" replace />} />
         <Route path="/postulacion" element={<Registro />} />
       </Route>
       <Route element={<AppLayout />}>
-        <Route index element={<OnlyFor role="partner"><Panel /></OnlyFor>} />
-        <Route path="perfil" element={<OnlyFor role="partner"><Perfil /></OnlyFor>} />
-        <Route path="direccion" element={<OnlyFor role="direccion"><Direccion /></OnlyFor>} />
-        <Route path="arquitectura" element={<OnlyFor role="direccion"><Arquitectura /></OnlyFor>} />
+        <Route index element={<SoloPara roles={['partner']}><Panel /></SoloPara>} />
+        <Route path="perfil" element={<SoloPara roles={['partner', 'lider_regional']}><Perfil /></SoloPara>} />
+        <Route path="direccion" element={<SoloPara roles={['direccion', 'lider_regional']}><Direccion /></SoloPara>} />
+        <Route path="arquitectura" element={<SoloPara roles={['direccion']}><Arquitectura /></SoloPara>} />
         <Route path="crm" element={<Crm />} />
-        <Route path="academia" element={<Academia />} />
+        <Route path="academia" element={<SoloPara roles={['partner', 'lider_regional']}><Academia /></SoloPara>} />
         <Route path="niveles" element={<Niveles />} />
+        <Route path="*" element={<NoEncontrado />} />
       </Route>
-      <Route path="*" element={<Navigate to="/" replace />} />
-    </Routes>
+      </Routes>
+    </>
   )
 }

@@ -1,0 +1,19 @@
+.estado {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  text-align: center;
+  padding: 2.5rem 1.25rem;
+  border-radius: var(--radius-lg, 14px);
+  color: var(--color-text-muted);
+}
+.estado--error { color: var(--color-danger, #b3261e); }
+.estado__icon { opacity: 0.8; }
+.estado__titulo { font-weight: 600; color: var(--color-text); margin: 0; }
+.estado__texto { margin: 0; max-width: 420px; }
+.estado--linea {
+  flex-direction: row;
+  justify-content: center;
+  padding: 0.75rem 1rem;
+}

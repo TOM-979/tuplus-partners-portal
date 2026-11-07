@@ -9,3 +9,8 @@
 .academy-meta { display: flex; flex-wrap: wrap; gap: var(--space-3); align-items: center; }
 .academy-cert { display: inline-flex; gap: 6px; align-items: center; font-size: var(--text-sm); font-weight: 600; color: var(--gold-ink); }
 .academy-note { font-size: var(--text-sm); }
+.academy-lecciones { margin-top: var(--space-2); border-top: 1px solid var(--line); padding-top: var(--space-3); }
+.academy-lecciones ul { display: grid; gap: var(--space-3); }
+.academy-leccion { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); }
+.academy-leccion .btn { padding: 6px 12px; font-size: var(--text-sm); }
+.academy-leccion.is-completa { opacity: 0.85; }
