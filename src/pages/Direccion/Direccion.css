@@ -1,5 +1,5 @@
 .dir-stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--space-4); }
-.app__main:has(.dir-stats) { max-width: 1400px; margin: 0 auto; padding: 40px 48px; }
+
 .dir-section { min-width: 0; margin-top: 40px; display: grid; gap: var(--space-4); align-content: start; }
 .dir-section > p { font-size: var(--text-sm); margin-top: calc(var(--space-2) * -1); }
 .dir-cap { min-width: 160px; }
@@ -26,39 +26,9 @@
   .dir-grid { grid-template-columns: minmax(0, 1fr); }
   .dir-side { margin-top: 0; }
 }
-@media (max-width: 900px) {
-  .app__main:has(.dir-stats) { padding: 32px; }
-}
+
 @media (max-width: 600px) {
-  .app__main:has(.dir-stats) { padding: 24px 16px; }
   .dir-stats { grid-template-columns: minmax(0, 1fr); }
   .dir-section { margin-top: 32px; }
   .dir-app__actions .btn { flex: 1 1 100%; }
-}
-
-.dir-stats > .stat {
-  animation: dir-enter 260ms ease-out backwards;
-  transition: background-color 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
-}
-.dir-stats > .stat:nth-child(2) { animation-delay: 40ms; }
-.dir-stats > .stat:nth-child(3) { animation-delay: 80ms; }
-.dir-stats > .stat:nth-child(4) { animation-delay: 120ms; }
-.dir-section { animation: dir-enter 280ms ease-out backwards; }
-.dir-section tbody tr { transition: background-color 180ms ease; }
-.dir-app__actions .btn {
-  transition: background-color 180ms ease, border-color 180ms ease, color 180ms ease, transform 180ms ease;
-}
-@media (hover: hover) {
-  .dir-stats > .stat:hover { background: #fbfcfe; border-color: var(--gold-300); box-shadow: 0 6px 20px rgba(10, 21, 44, 0.08); }
-  .dir-section tbody tr:hover { background: #f7f9fb; }
-  .dir-app__actions .btn:not(:disabled):hover { transform: translateY(-1px) scale(1.01); }
-  .dir-app__actions .btn-ghost:not(:disabled):hover { background: #f1f4f8; }
-}
-@keyframes dir-enter {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-@media (prefers-reduced-motion: reduce) {
-  .dir-stats > .stat, .dir-section { animation: none; }
-  .dir-app__actions .btn:not(:disabled):hover { transform: none; }
 }

@@ -39,7 +39,37 @@
 .topbar p { display: inline-flex; align-items: center; gap: 6px; font-size: var(--text-sm); color: var(--muted); }
 .topbar__territory { margin-left: auto; color: var(--ink) !important; font-weight: 600; }
 .topbar__menu { display: none; }
-.app__main { padding: var(--space-6); width: 100%; max-width: 1280px; outline: none; }
+.app__main { padding: 40px 48px; width: 100%; max-width: 1400px; min-width: 0; margin: 0 auto; outline: none; }
+.app__main > :not(.visually-hidden) { min-width: 0; max-width: 100%; animation: portal-enter 280ms ease-out backwards; }
+
+/* Shared content sizing and motion for every authenticated portal page. */
+.app__main :where(.grid, .panel-grid, .panel-stats, .dir-stats, .dir-grid, .crm-board, .levels-grid, .arch-row, .academy-grid, .profile-grid, .table-wrap) { width: 100%; min-width: 0; }
+.app__main :where(.card, .stat, .crm-card, .arch-block) {
+  transition: background-color 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+}
+.app__main .stat { animation: portal-enter 260ms ease-out backwards; }
+.app__main .stat:nth-child(2) { animation-delay: 40ms; }
+.app__main .stat:nth-child(3) { animation-delay: 80ms; }
+.app__main .stat:nth-child(4) { animation-delay: 120ms; }
+.app__main :where(tbody tr, .panel-list > li, .profile-dl > div) { transition: background-color 180ms ease; }
+.app__main .btn { transition: background-color 180ms ease, border-color 180ms ease, color 180ms ease, transform 180ms ease; }
+@media (hover: hover) {
+  .app__main :where(.card, .stat, .crm-card, .arch-block):hover { box-shadow: 0 6px 20px rgba(10, 21, 44, 0.08); }
+  .app__main :where(tbody tr, .panel-list > li, .profile-dl > div):hover { background-color: #f7f9fb; }
+  .app__main .btn:not(:disabled):hover { transform: translateY(-1px) scale(1.01); }
+  .app__main .btn-ghost:not(:disabled):hover { background-color: #f1f4f8; }
+}
+@media (min-width: 1101px) {
+  .app__main .crm-board { grid-auto-columns: minmax(200px, 1fr); }
+}
+@keyframes portal-enter {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .app__main > :not(.visually-hidden), .app__main .stat { animation: none; }
+  .app__main .btn:not(:disabled):hover { transform: none; }
+}
 .scrim { display: none; }
 
 @media (max-width: 900px) {
@@ -56,7 +86,10 @@
     border: 0; border-radius: var(--radius-sm); background: none;
   }
   .topbar__demo { font-size: var(--text-xs) !important; }
-  .app__main { padding: var(--space-5) var(--space-4); }
+  .app__main { padding: 32px; }
+}
+@media (max-width: 600px) {
+  .app__main { padding: 24px 16px; }
 }
 @media (max-width: 480px) {
   .topbar__territory { display: none !important; }
