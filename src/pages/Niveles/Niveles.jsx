@@ -44,40 +44,59 @@ export default function Niveles() {
   const detalle = DETALLE[level.codigo] || { can: [], cannot: [], next: '' }
   const detalleLider = DETALLE[leader.codigo] || { can: [] }
 
+  const orden = niveles.filter((l) => l.tipo === 'rango')
+  const indice = orden.findIndex((l) => l.codigo === level.codigo)
+  const esActual = current === level.codigo
+  const avance = orden.length > 1 ? Math.round((Math.max(indice, 0) / (orden.length - 1)) * 100) : 0
+
   return (
     <>
       <PageHeader title="Niveles L0–L6" description="Se asciende por mérito: calidad, resultados cobrados, uso correcto del CRM, ética y liderazgo. Cada ascenso lo decide la Dirección y queda en tu historial." />
 
-      <section className="card levels-ladder" aria-labelledby="escalera">
-        <h2 id="escalera" className="visually-hidden">Escalera de rangos</h2>
-        <LevelLadder current={current} selected={selected} onSelect={setSelected} size="lg" />
+      <section className="levels-stage" aria-labelledby="escalera">
+        <div className="levels-stage__head">
+          <h2 id="escalera">La escalera de la Red</h2>
+          <p>Toca un nivel para ver qué puedes hacer en él y cómo se llega al siguiente.</p>
+        </div>
+        <div className="levels-stage__ladder">
+          <LevelLadder current={current} selected={selected} onSelect={setSelected} size="lg" />
+        </div>
+        {current && <p className="levels-stage__you"><Icon name="target" size={16} /> Tu rango actual es <strong>{current}</strong></p>}
       </section>
 
       <div className="levels-grid">
-        <section className="card levels-detail" aria-live="polite" aria-labelledby="detalle">
+        <section className="card levels-detail" key={level.codigo} aria-live="polite" aria-labelledby="detalle">
           <div className="levels-detail__head">
-            <h2 id="detalle">{level.codigo} · {level.nombre}</h2>
-            {current === level.codigo && <Badge tone="gold">Tu rango actual</Badge>}
+            <span className="levels-detail__code" aria-hidden="true">{level.codigo}</span>
+            <div>
+              <h2 id="detalle">{level.nombre}</h2>
+              <p className="muted">Nivel {indice + 1} de {orden.length}</p>
+            </div>
+            {esActual && <Badge tone="gold">Tu rango actual</Badge>}
           </div>
-          <p>{level.descripcion}</p>
+          <div className="levels-meter" role="img" aria-label={`Posición en la escalera: ${avance}%`}><i style={{ width: `${avance}%` }} /></div>
+          <p className="levels-detail__desc">{level.descripcion}</p>
           <div className="levels-cols">
-            <div>
-              <h3>Puede</h3>
-              <ul>{detalle.can.map((c) => <li key={c}><Icon name="check" size={18} /> {c}</li>)}</ul>
+            <div className="levels-col levels-col--yes">
+              <h3><Icon name="check" size={16} /> Puede</h3>
+              <ul>{detalle.can.map((c) => <li key={c}>{c}</li>)}</ul>
             </div>
-            <div>
-              <h3>No puede</h3>
-              <ul className="is-no">{detalle.cannot.map((c) => <li key={c}><Icon name="lock" size={18} /> {c}</li>)}</ul>
+            <div className="levels-col levels-col--no">
+              <h3><Icon name="lock" size={16} /> Todavía no puede</h3>
+              <ul>{detalle.cannot.map((c) => <li key={c}>{c}</li>)}</ul>
             </div>
           </div>
-          {detalle.next && <p className="levels-next"><strong>Siguiente paso:</strong> {detalle.next}</p>}
+          {detalle.next && (
+            <p className="levels-next"><span className="levels-next__icon"><Icon name="arrowRight" size={18} /></span><span><strong>Para avanzar:</strong> {detalle.next}</span></p>
+          )}
         </section>
 
-        <section className="card levels-role" aria-labelledby="funcion">
-          <Badge tone="info">Función territorial</Badge>
+        <section className="levels-role" aria-labelledby="funcion">
+          <span className="levels-role__icon"><Icon name="map" size={22} /></span>
+          <Badge tone="gold">Función territorial</Badge>
           <h2 id="funcion">{leader.codigo} · {leader.nombre}</h2>
           <p>{leader.descripcion}</p>
-          <ul>{detalleLider.can.map((c) => <li key={c}><Icon name="map" size={18} /> {c}</li>)}</ul>
+          <ul>{detalleLider.can.map((c) => <li key={c}><Icon name="check" size={16} /> {c}</li>)}</ul>
           {usuario.partner?.esLiderRegional && <p className="levels-confirm"><Icon name="check" size={16} /> Tú tienes esta función además de tu rango.</p>}
         </section>
       </div>

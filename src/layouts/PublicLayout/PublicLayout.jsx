@@ -14,7 +14,7 @@ export default function PublicLayout() {
         <Outlet />
       </main>
       <footer className="public__foot">
-        <p>TUPLUS Soluciones Digitales LATAM · Portal Partners en desarrollo (Etapa 1)</p>
+        <p>TUPLUS Soluciones Digitales LATAM · Portal Partners</p>
       </footer>
     </div>
   )

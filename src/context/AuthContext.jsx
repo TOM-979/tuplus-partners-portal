@@ -22,7 +22,7 @@ export function AuthProvider({ children }) {
     if (!t) { setCargando(false); return }
     api.get('/auth/yo')
       .then((r) => setUsuario(r.dato))
-      .catch(() => token.set(null))
+      .catch((err) => { if (err instanceof ApiError && [401, 403].includes(err.status)) token.set(null) }) // un fallo de red no borra la sesión guardada
       .finally(() => setCargando(false))
   }, [])
 

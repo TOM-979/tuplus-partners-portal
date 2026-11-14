@@ -94,10 +94,10 @@ export default function Direccion() {
       <PageHeader title="Panel de Dirección" description={soloDireccion ? 'Supervisión de la red, los territorios y las postulaciones.' : 'Supervisión de tu territorio como Líder Regional.'} />
 
       <div className="dir-stats">
-        <StatCard label="Partners activos" value={resumen.partners.activos ?? 0} note={`de ${resumen.partners.total} en total`} />
-        <StatCard label="Postulaciones por revisar" value={pendientes.length} />
-        <StatCard label="Preseleccionadas" value={resumen.postulaciones.preseleccionadas ?? 0} />
-        <StatCard label="Activadas como Partner" value={resumen.postulaciones.aprobadas ?? 0} />
+        <StatCard icon="users" label="Partners activos" value={resumen.partners.activos ?? 0} note={`de ${resumen.partners.total} en total`} />
+        <StatCard icon="mail" label="Postulaciones por revisar" value={pendientes.length} />
+        <StatCard icon="check" label="Preseleccionadas" value={resumen.postulaciones.preseleccionadas ?? 0} />
+        <StatCard icon="award" label="Activadas como Partner" value={resumen.postulaciones.aprobadas ?? 0} />
       </div>
 
       <p className="visually-hidden" aria-live="polite">{aviso}</p>
@@ -165,13 +165,6 @@ export default function Direccion() {
           )}
         </section>
 
-        <aside className="dir-side">
-          <section className="card dir-locked" aria-labelledby="comisiones">
-            <Icon name="lock" />
-            <h2 id="comisiones">Comisiones</h2>
-            <p>Bloqueado hasta la validación directiva, legal, contable y tributaria. No se publican porcentajes sin aprobación.</p>
-          </section>
-        </aside>
       </div>
     </>
   )

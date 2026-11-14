@@ -8,8 +8,8 @@ import Perfil from './pages/Perfil/Perfil.jsx'
 import Niveles from './pages/Niveles/Niveles.jsx'
 import Academia from './pages/Academia/Academia.jsx'
 import Crm from './pages/Crm/Crm.jsx'
+import Gestion from './pages/Gestion/Gestion.jsx'
 import Direccion from './pages/Direccion/Direccion.jsx'
-import Arquitectura from './pages/Arquitectura/Arquitectura.jsx'
 import NoEncontrado from './pages/NoEncontrado/NoEncontrado.jsx'
 import { useAuth } from './context/AuthContext.jsx'
 import { Cargando } from './components/Estado/Estado.jsx'
@@ -18,7 +18,7 @@ import AvisoConexion from './components/AvisoConexion/AvisoConexion.jsx'
 // Rutas protegidas por rol. El servidor vuelve a validar cada permiso: esto solo oculta la pantalla.
 function SoloPara({ roles, children }) {
   const { usuario } = useAuth()
-  if (!roles.includes(usuario.rol)) return <Navigate to={usuario.rol === 'partner' ? '/' : '/direccion'} replace />
+  if (!roles.includes(usuario.rol)) return <Navigate to={['partner', 'direccion'].includes(usuario.rol) ? '/' : '/direccion'} replace />
   return children
 }
 
@@ -57,12 +57,12 @@ export default function App() {
         <Route path="/postulacion" element={<Registro />} />
       </Route>
       <Route element={<AppLayout />}>
-        <Route index element={<SoloPara roles={['partner']}><Panel /></SoloPara>} />
-        <Route path="perfil" element={<SoloPara roles={['partner', 'lider_regional']}><Perfil /></SoloPara>} />
+        <Route index element={<SoloPara roles={['partner', 'direccion']}><Panel /></SoloPara>} />
+        <Route path="perfil" element={<SoloPara roles={['partner', 'lider_regional', 'direccion']}><Perfil /></SoloPara>} />
         <Route path="direccion" element={<SoloPara roles={['direccion', 'lider_regional']}><Direccion /></SoloPara>} />
-        <Route path="arquitectura" element={<SoloPara roles={['direccion']}><Arquitectura /></SoloPara>} />
+        <Route path="gestion" element={<SoloPara roles={['direccion', 'lider_regional']}><Gestion /></SoloPara>} />
         <Route path="crm" element={<Crm />} />
-        <Route path="academia" element={<SoloPara roles={['partner', 'lider_regional']}><Academia /></SoloPara>} />
+        <Route path="academia" element={<SoloPara roles={['partner', 'lider_regional', 'direccion']}><Academia /></SoloPara>} />
         <Route path="niveles" element={<Niveles />} />
         <Route path="*" element={<NoEncontrado />} />
       </Route>

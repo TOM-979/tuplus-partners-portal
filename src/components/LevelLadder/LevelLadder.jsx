@@ -11,15 +11,17 @@ const RANKS = [
   { code: 'L5', name: 'MASTER PARTNER TUPLUS' },
 ]
 
-export default function LevelLadder({ current, selected, onSelect, size = 'md' }) {
+export default function LevelLadder({ current, selected, onSelect, size = 'md', completed = false }) {
   const currentIndex = RANKS.findIndex((l) => l.code === current)
   const interactive = Boolean(onSelect)
+  // Sin rango propio (por ejemplo Dirección), la escalera se va llenando hasta el nivel que se mira
+  const fillIndex = currentIndex < 0 && selected ? RANKS.findIndex((l) => l.code === selected) : -1
 
   return (
     <div className={`ladder ladder--${size}`}>
       <ol className="ladder__steps" aria-label="Rangos de la Red de Socios">
         {RANKS.map((l, i) => {
-          const status = i < currentIndex ? 'done' : i === currentIndex ? 'current' : 'next'
+          const status = completed || i < currentIndex || i <= fillIndex ? 'done' : i === currentIndex ? 'current' : 'next'
           const content = (
             <>
               <span className="ladder__bar" style={{ '--step': i }} />
