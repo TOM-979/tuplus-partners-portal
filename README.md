@@ -16,12 +16,7 @@ npm run dev             # abre http://localhost:5173
 
 Otros comandos: `npm run build` (versión final en `dist/`) y `npm run preview` (prueba la versión final).
 
-Entra con una cuenta real (creada en la API, por ejemplo con `npm run db:demo` en `tuplus-partners-api`):
-
-| Correo | Contraseña | Verás |
-|---|---|---|
-| `partner@tuplus.pe` | `Partner.2026` | Panel comercial, CRM (solo su cartera), Academia, perfil |
-| `direccion@tuplus.pe` | `Direccion.2026` | Pide un código de 6 dígitos (se imprime en la consola de la API en desarrollo), luego el Panel de Dirección |
+Entra con una cuenta real creada en la API (no hay cuentas ni datos de ejemplo). La cuenta de Dirección se crea con el script de la API y pide un código de 6 dígitos enviado al correo.
 
 ## Pantallas
 
@@ -31,11 +26,11 @@ Entra con una cuenta real (creada en la API, por ejemplo con `npm run db:demo` e
 | `/postulacion` | Postulación a la Red en 5 pasos | Todos (público) | `GET /territorios`, `POST /postulaciones` |
 | `/` | Panel comercial personalizado | Partner | `GET /perfil`, `GET /crm`, `GET /academia/cursos` |
 | `/perfil` | Perfil, código, rango e historial de cambios | Partner / Líder Regional | `GET /perfil`, `GET /perfil/historial`, `PATCH /auth/contrasena` |
-| `/crm` | Oportunidades por etapa | Partner (lo suyo) · Líder Regional (su territorio) · Dirección (todo) | `GET/POST/PATCH /crm` |
-| `/academia` | Cursos y lecciones por nivel | Partner / Líder Regional | `GET /academia/cursos`, `GET /academia/cursos/:id`, `POST .../completar` |
+| `/crm` | Oportunidades por etapa | Partner (lo suyo) · Líder Regional (su territorio) · Dirección (todo) | `GET/POST/PATCH /crm`, `/etapas/empresas`, `/etapas/oportunidades/:id/seguimientos` |
+| `/academia` | Cursos, lecciones, evaluación, certificados y gestión de cursos | Partner / Líder Regional · Dirección (publica cursos) | `/etapas/cursos`, `/etapas/lecciones/:id/completar`, `/etapas/cursos/:id/evaluar`, `/etapas/certificados` |
+| `/gestion` | Reportes, supervisión regional, comisiones y posventa | Dirección / Líder Regional | `GET /etapas/gestion`, `/etapas/comisiones` |
 | `/niveles` | Niveles L0–L6 | Todos los que iniciaron sesión | `GET /niveles` (público) |
 | `/direccion` | Territorios, bandeja de revisión, activación de Partners | Dirección / Líder Regional | `GET /direccion/...`, `PATCH/POST /direccion/...` |
-| `/arquitectura` | Ecosistema y etapas de desarrollo | Dirección | Contenido fijo (`src/data/roadmap.js`) |
 
 Cualquier ruta que no exista muestra una pantalla de "No encontramos esta página" con un enlace de vuelta al inicio.
 

@@ -10,11 +10,17 @@ import Icon from '../../components/Icon/Icon.jsx'
 import { Cargando, ErrorEstado, Vacio } from '../../components/Estado/Estado.jsx'
 import { useAuth } from '../../context/AuthContext.jsx'
 import { api, ApiError } from '../../lib/api.js'
+import PanelDireccion from './PanelDireccion.jsx'
 
 const ETAPA_NOMBRE = { contacto: 'Primer contacto', diagnostico: 'Diagnóstico', propuesta: 'Propuesta', negociacion: 'Negociación', cierre: 'Cierre', posventa: 'Posventa' }
 const money = (n) => (n ? `USD ${Number(n).toLocaleString('es-PE')}` : 'Por cotizar')
 
 export default function Panel() {
+  const { usuario } = useAuth()
+  return usuario.rol === 'direccion' ? <PanelDireccion /> : <PanelPartner />
+}
+
+function PanelPartner() {
   const { usuario } = useAuth()
   const [estado, setEstado] = useState({ cargando: true, error: '' })
   const [perfil, setPerfil] = useState(null)
@@ -46,26 +52,24 @@ export default function Panel() {
         actions={<Link className="btn btn-primary" to="/crm">Registrar oportunidad</Link>} />
 
       <div className="panel-grid">
-        <section className="card panel-rank" aria-labelledby="rango">
-          <div className="panel-rank__head">
-            <div>
-              <p className="muted">Tu rango actual</p>
-              <h2 id="rango">{usuario.partner.nivel} · {nombreNivel(usuario.partner.nivel)}</h2>
-            </div>
+        <section className="panel-hero" aria-labelledby="rango">
+          <div className="panel-hero__text">
             <Badge tone="gold">Código {usuario.partner.codigo}</Badge>
+            <p className="panel-hero__label">Tu rango actual</p>
+            <h2 id="rango">{usuario.partner.nivel} · {nombreNivel(usuario.partner.nivel)}</h2>
+            {perfil?.partner?.siguienteNivel
+              ? <p className="panel-hero__next">Siguiente nivel: <strong>{perfil.partner.siguienteNivel.codigo} · {perfil.partner.siguienteNivel.nombre}</strong></p>
+              : <p className="panel-hero__next">Estás en el nivel más alto de la escalera.</p>}
+            <Link to="/niveles" className="panel-hero__link">Ver todos los niveles <Icon name="arrowRight" size={16} /></Link>
           </div>
-          <LevelLadder current={usuario.partner.nivel} size="sm" />
-          {perfil?.partner?.siguienteNivel && (
-            <p className="panel-rank__next"><strong>Siguiente nivel:</strong> {perfil.partner.siguienteNivel.codigo} · {perfil.partner.siguienteNivel.nombre}</p>
-          )}
-          <Link to="/niveles" className="panel-link">Ver todos los niveles</Link>
+          <div className="panel-hero__ladder"><LevelLadder current={usuario.partner.nivel} size="sm" /></div>
         </section>
 
         <div className="panel-stats">
-          <StatCard label="Oportunidades activas" value={activas.length} />
-          <StatCard label="En negociación" value={enNegociacion} />
-          <StatCard label="Monto en proceso" value={money(pipeline)} note="Propuestas con monto registrado" />
-          <StatCard label="Avance en la Academia" value={totalLecciones ? `${Math.round((leccionesHechas / totalLecciones) * 100)}%` : '—'} note={totalLecciones ? `${leccionesHechas} de ${totalLecciones} lecciones` : 'Sin cursos todavía'} />
+          <StatCard icon="briefcase" label="Oportunidades activas" value={activas.length} />
+          <StatCard icon="target" label="En negociación" value={enNegociacion} />
+          <StatCard icon="coin" label="Monto en proceso" value={money(pipeline)} note="Propuestas con monto registrado" />
+          <StatCard icon="book" label="Avance en la Academia" value={totalLecciones ? `${Math.round((leccionesHechas / totalLecciones) * 100)}%` : '—'} note={totalLecciones ? `${leccionesHechas} de ${totalLecciones} lecciones` : 'Sin cursos todavía'} />
         </div>
 
         <section className="card" aria-labelledby="pendientes">

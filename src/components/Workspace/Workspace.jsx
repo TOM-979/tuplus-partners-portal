@@ -1,3 +1,4 @@
+import { useSearchParams } from "react-router-dom";
 import "./Workspace.css";
 export function Input({ label, children, ...props }) {
   return (
@@ -16,6 +17,23 @@ export function Notice({ children, error = false }) {
       {children}
     </p>
   ) : null;
+}
+// La pestaña activa vive en la URL (?vista=...): sirve el botón atrás, recargar y compartir el enlace.
+export function useTabParam(defecto, validos) {
+  const [params, setParams] = useSearchParams();
+  const pedido = params.get("vista");
+  const tab = validos.includes(pedido) ? pedido : defecto;
+  const setTab = (t) =>
+    setParams(
+      (anterior) => {
+        const n = new URLSearchParams(anterior);
+        if (t === defecto) n.delete("vista");
+        else n.set("vista", t);
+        return n;
+      },
+      { replace: true },
+    );
+  return [tab, setTab];
 }
 export function Tabs({ items, value, onChange }) {
   return (

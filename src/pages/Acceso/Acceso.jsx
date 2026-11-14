@@ -43,7 +43,7 @@ export default function Acceso() {
     setError(''); setEnviando(true)
     try {
       await confirmarCodigo(usuarioId, codigo.trim())
-      navigate('/direccion')
+      navigate('/')
     } catch (err) {
       setError(err instanceof ApiError ? err.message : 'No se pudo confirmar el código.')
     } finally {
@@ -55,8 +55,8 @@ export default function Acceso() {
     <div className="access">
       <section className="access__intro">
         <div className="access__brand">
-          <span className="access__brand-icon"><Logo height={16} /></span>
-          <span>TUPLUS <span className="access__brand-accent">Partners</span></span>
+          <Logo tone="light" height={48} />
+          <span className="access__brand-tag">Partners</span>
         </div>
         <div className="access__story">
         <h1>El espacio privado de la Red de Socios Comerciales.</h1>
@@ -66,7 +66,12 @@ export default function Acceso() {
           <li><span className="access__benefit-icon"><Icon name="book" size={22} /></span><div><h2>Aprende y certifícate</h2><p>Capacítate y certifícate en la Academia Comercial.</p></div></li>
         </ul>
         </div>
-        <p className="access__footer">TUPLUS Partners · Portal privado</p>
+        <div className="access__ladder" aria-hidden="true">
+          {['L0', 'L1', 'L2', 'L3', 'L4', 'L5'].map((n, i) => (
+            <span key={n} style={{ '--i': i }}><i />{n}</span>
+          ))}
+        </div>
+        <p className="access__footer"><Icon name="shield" size={14} /> Portal privado · Acceso protegido</p>
       </section>
 
       <section className="access__form-panel" aria-labelledby="acceso-titulo">
@@ -81,7 +86,7 @@ export default function Acceso() {
             </div>
             <div className="access__fields">
               <Field id="correo" label="Correo electrónico">
-                {(a) => <input {...a} type="email" autoComplete="email" inputMode="email" placeholder="nombre@tuplus.pe" required value={correo} onChange={(e) => setCorreo(e.target.value)} />}
+                {(a) => <input {...a} type="email" name="correo" autoComplete="email" inputMode="email" spellCheck={false} placeholder="nombre@tuplus.pe" required value={correo} onChange={(e) => setCorreo(e.target.value)} />}
               </Field>
               <Field id="contrasena" label="Contraseña">
                 {(a) => <div className="access__password">
@@ -106,7 +111,7 @@ export default function Acceso() {
             <h2 id="acceso-titulo">Confirma tu acceso</h2>
             <p className="access__note"><Icon name="mail" size={16} /> Enviamos un código a tu correo. Escríbelo aquí; vence en 10 minutos.</p>
             <Field id="codigo" label="Código de 6 dígitos">
-              {(a) => <input {...a} inputMode="numeric" maxLength={6} autoComplete="one-time-code" required value={codigo} onChange={(e) => setCodigo(e.target.value.replace(/\D/g, ''))} />}
+              {(a) => <input {...a} name="codigo" inputMode="numeric" maxLength={6} autoComplete="one-time-code" spellCheck={false} required value={codigo} onChange={(e) => setCodigo(e.target.value.replace(/\D/g, ''))} />}
             </Field>
             {error && <p className="field__error" role="alert">{error}</p>}
             <button type="submit" className="btn btn-primary access__submit" disabled={enviando}>
@@ -115,6 +120,7 @@ export default function Acceso() {
             <button type="button" className="btn btn-ghost access__submit" onClick={() => { setPaso('credenciales'); setCodigo(''); setError('') }}>Volver</button>
           </form>
         )}
+        <p className="access__secure"><Icon name="lock" size={14} /> Tu sesión se cierra sola tras {Number(import.meta.env.VITE_INACTIVIDAD_MINUTOS) || 30} minutos sin actividad.</p>
         <p className="access__apply">¿Todavía no eres Partner? <Link to="/postulacion">Postula a la Red</Link></p>
         </div>
       </section>

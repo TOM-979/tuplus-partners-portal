@@ -21,6 +21,17 @@ const paths = {
   warning: <><path d="M12 3 2 20h20z" /><path d="M12 10v4" /><path d="M12 17h.01" /></>,
   loader: <><path d="M12 3v3" /><path d="M12 18v3" /><path d="M5 5l2 2" /><path d="M17 17l2 2" /><path d="M3 12h3" /><path d="M18 12h3" /><path d="M5 19l2-2" /><path d="M17 7l2-2" /></>,
   mail: <><rect x="3" y="5" width="18" height="14" rx="2" /><path d="m4 7 8 6 8-6" /></>,
+  plus: <><path d="M12 5v14" /><path d="M5 12h14" /></>,
+  arrowRight: <><path d="M5 12h14" /><path d="m13 6 6 6-6 6" /></>,
+  chevronRight: <path d="m9 6 6 6-6 6" />,
+  chevronDown: <path d="m6 9 6 6 6-6" />,
+  target: <><circle cx="12" cy="12" r="9" /><circle cx="12" cy="12" r="5" /><circle cx="12" cy="12" r="1" /></>,
+  clock: <><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></>,
+  calendar: <><rect x="3" y="5" width="18" height="16" rx="2" /><path d="M3 10h18" /><path d="M8 3v4" /><path d="M16 3v4" /></>,
+  phone: <path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z" />,
+  download: <><path d="M12 4v12" /><path d="m7 11 5 5 5-5" /><path d="M5 20h14" /></>,
+  coin: <><circle cx="12" cy="12" r="9" /><path d="M14.5 9.2c-.5-.8-1.4-1.2-2.5-1.2-1.4 0-2.5.8-2.5 1.9 0 2.6 5 1.2 5 3.9 0 1.1-1.1 2-2.5 2-1.2 0-2.2-.5-2.7-1.4" /><path d="M12 6.5V8" /><path d="M12 16v1.5" /></>,
+  spark: <path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z" />,
   wifiOff: <><path d="M2 8.5a16 16 0 0 1 20 0" opacity="0.35" /><path d="M5 12.3a11 11 0 0 1 14 0" /><path d="M8.5 16a6.5 6.5 0 0 1 7 0" /><circle cx="12" cy="19.5" r="1" /><path d="M2 2l20 20" /></>,
 }
 

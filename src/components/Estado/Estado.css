@@ -1,19 +1,28 @@
 .estado {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.75rem;
-  text-align: center;
-  padding: 2.5rem 1.25rem;
-  border-radius: var(--radius-lg, 14px);
-  color: var(--color-text-muted);
+  display: flex; flex-direction: column; align-items: center; gap: var(--space-3);
+  text-align: center; padding: var(--space-7) var(--space-5);
+  border-radius: var(--radius-lg); color: var(--muted);
 }
-.estado--error { color: var(--color-danger, #b3261e); }
-.estado__icon { opacity: 0.8; }
-.estado__titulo { font-weight: 600; color: var(--color-text); margin: 0; }
-.estado__texto { margin: 0; max-width: 420px; }
-.estado--linea {
-  flex-direction: row;
-  justify-content: center;
-  padding: 0.75rem 1rem;
+.estado__icono {
+  display: grid; place-items: center; width: 56px; height: 56px; border-radius: 16px;
+  background: var(--gold-50); color: var(--gold-600); box-shadow: inset 0 0 0 1px var(--gold-100);
 }
+.estado--error .estado__icono { background: var(--bad-soft); color: var(--bad); box-shadow: inset 0 0 0 1px #f3caca; }
+.estado--error { color: var(--bad); }
+.estado__titulo { font-family: var(--font-display); font-weight: 600; font-size: var(--text-lg); color: var(--ink); margin: 0; }
+.estado__texto { margin: 0; max-width: 44ch; color: var(--muted); }
+.estado--linea { flex-direction: row; justify-content: center; padding: var(--space-3) var(--space-4); }
+
+/* Cargando con esqueleto: se ve la forma de lo que viene */
+.skeleton { display: grid; gap: var(--space-3); width: 100%; padding: var(--space-2) 0; }
+.skeleton i {
+  display: block; height: 14px; border-radius: 8px;
+  background: linear-gradient(90deg, #e9edf3 25%, #f4f6fa 50%, #e9edf3 75%); background-size: 200% 100%;
+  animation: skeleton 1.4s ease-in-out infinite;
+}
+.skeleton i:nth-child(1) { width: 38%; height: 22px; }
+.skeleton i:nth-child(2) { width: 92%; }
+.skeleton i:nth-child(3) { width: 78%; }
+.skeleton i:nth-child(4) { width: 64%; }
+@keyframes skeleton { to { background-position: -200% 0; } }
+@media (prefers-reduced-motion: reduce) { .skeleton i { animation: none; } }

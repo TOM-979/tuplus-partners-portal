@@ -2,38 +2,44 @@
 :root {
   --navy-950: #0a152c;
   --navy-900: #0f2038;
-  --navy-800: #122c3d;
-  --navy-700: #1d3a52;
+  --navy-800: #16294a;
+  --navy-700: #1f3a63;
+  --navy-600: #2d4d7e;
+  --gold-600: #b3853a;
   --gold-500: #cb9d54;
   --gold-300: #e6cf9c;
-  --gold-100: #f6ecd6;
+  --gold-100: #f8efdc;
+  --gold-50: #fcf8ef;
   --gold-ink: #7a5a1c;
 
-  --bg: #f1f4f8;
+  --bg: #f3f5f9;
   --surface: #ffffff;
-  --line: #dce2ea;
-  --line-strong: #b9c3d1;
-  --ink: #0d1b2e;
-  --muted: #536074;
+  --surface-2: #f8f9fc;
+  --line: #e4e8ef;
+  --line-strong: #c9d1de;
+  --ink: #0b1730;
+  --ink-2: #26344d;
+  --muted: #566176;
 
-  --ok: #1b6b4f;
-  --ok-soft: #e3f3ec;
-  --warn: #8a5a00;
-  --warn-soft: #fbf0d9;
+  --ok: #14694b;
+  --ok-soft: #e1f4ec;
+  --warn: #8a5600;
+  --warn-soft: #fcf0d6;
   --bad: #a3262a;
-  --bad-soft: #fbe6e6;
-  --info: #1f5c99;
-  --info-soft: #e4eef9;
+  --bad-soft: #fbe7e7;
+  --info: #1d5aa0;
+  --info-soft: #e5eefa;
 
   --font-display: 'Saira', 'Segoe UI', sans-serif;
-  --font-text: 'Public Sans', 'Segoe UI', system-ui, sans-serif;
+  --font-text: 'Geist Variable', 'Public Sans', 'Segoe UI', system-ui, sans-serif;
 
-  /* Escala de letra: 12 / 14 / 16 / 20 / 28 */
+  /* Escala de letra */
   --text-xs: 0.75rem;
   --text-sm: 0.875rem;
-  --text-md: 1rem;
+  --text-md: 0.9375rem;
   --text-lg: 1.25rem;
   --text-xl: 1.75rem;
+  --text-2xl: 2.25rem;
 
   /* Espacios en múltiplos de 4 */
   --space-1: 4px;
@@ -44,9 +50,16 @@
   --space-6: 32px;
   --space-7: 48px;
 
-  --radius: 10px;
-  --radius-sm: 8px;
-  --shadow: 0 1px 2px rgba(10, 21, 44, 0.06), 0 4px 14px rgba(10, 21, 44, 0.05);
-  --sidebar: 264px;
+  --radius-sm: 10px;
+  --radius: 14px;
+  --radius-lg: 20px;
+  --shadow-sm: 0 1px 2px rgba(10, 21, 44, 0.05);
+  --shadow: 0 1px 2px rgba(10, 21, 44, 0.04), 0 6px 20px -8px rgba(10, 21, 44, 0.10);
+  --shadow-lg: 0 2px 4px rgba(10, 21, 44, 0.05), 0 24px 48px -16px rgba(10, 21, 44, 0.22);
+  --ring: 0 0 0 3px rgba(203, 157, 84, 0.45);
+
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --sidebar: 272px;
   --touch: 44px;
+  --topbar: 64px;
 }

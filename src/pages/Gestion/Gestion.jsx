@@ -15,10 +15,14 @@ import {
   money,
   fecha,
   downloadCsv,
+  useTabParam,
 } from "../../components/Workspace/Workspace.jsx";
 import { useAuth } from "../../context/AuthContext.jsx";
 import { api } from "../../lib/api.js";
-import { STAGES } from "../Crm/Crm.jsx";
+import { STAGES as ETAPAS } from "../Crm/Crm.jsx";
+
+// Crm exporta objetos {id, name}; esta pantalla los usa como pares [id, nombre].
+const STAGES = ETAPAS.map((e) => [e.id, e.name]);
 
 const status = {
   pendiente: ["Por aprobar", "warn"],
@@ -33,7 +37,7 @@ export default function Gestion() {
     [error, setError] = useState(""),
     [notice, setNotice] = useState(""),
     [busy, setBusy] = useState(false),
-    [tab, setTab] = useState("reportes");
+    [tab, setTab] = useTabParam("reportes", ["reportes", "red", "comisiones", "posventa"]);
   const [territorio, setTerritorio] = useState(""),
     [moneda, setMoneda] = useState("USD"),
     [desde, setDesde] = useState(""),
@@ -122,19 +126,6 @@ export default function Gestion() {
             : "Indicadores y seguimiento de los Partners de tu territorio."
         }
       />
-      <section className="work-hero">
-        <div>
-          <span className="work-eyebrow">
-            Etapa 04 · Dirección y seguimiento
-          </span>
-          <h2>Una visión clara para decidir mejor</h2>
-          <p>
-            Consulta el avance comercial, revisa compromisos y documenta cada
-            aprobación.
-          </p>
-        </div>
-        <span className="work-badge-number">04</span>
-      </section>
       <Tabs
         value={tab}
         onChange={setTab}

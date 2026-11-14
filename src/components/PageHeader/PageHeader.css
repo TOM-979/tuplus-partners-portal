@@ -1,3 +1,9 @@
-.page-header { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: var(--space-4); margin-bottom: var(--space-5); }
-.page-header p { color: var(--muted); margin-top: var(--space-2); max-width: 64ch; }
+.page-header { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: var(--space-4); margin-bottom: var(--space-6); }
+.page-header h1 { font-size: var(--text-2xl); letter-spacing: -0.015em; }
+.page-header p { color: var(--muted); margin-top: var(--space-2); max-width: 62ch; font-size: var(--text-md); }
 .page-header__actions { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+@media (max-width: 600px) {
+  .page-header { margin-bottom: var(--space-5); }
+  .page-header h1 { font-size: 1.625rem; }
+  .page-header__actions, .page-header__actions .btn { width: 100%; }
+}
